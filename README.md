@@ -4,7 +4,7 @@ Data was processed by kiwi QC and additional removal of tailing G's and adapter 
 
 Golden datasets to use in analyses:
 
-1. Kraken table (genus level, using RefSeq DB, kraken score threshold used?)
+1. Kraken table (genus level, using RefSeq DB, kraken score threshold used?): `Kraken_genus_DS10828562.txt` and RPM version `Kraken_genus_RPM_from_DS10828562`
 2. RoDEO on Kraken table (parameters...)
 3. PRROMenade table (level 4 pushed-down, using 2020 bact+virus FGP DB, min. match 8 AA, not normalized in any way): `PRROMenade_table_level4.csv` [`PRROMenade_table_raw.csv` has counts before pushing to level 4, across all KEGG EC levels]
 4. RoDEO on PRROMenade table (parameters...)
