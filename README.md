@@ -10,4 +10,4 @@ Golden datasets to use in analyses:
 3. PRROMenade table (level 4 pushed-down, using 2020 bact+virus FGP DB, min. match 8 AA): `PRROMenade_table_level4.csv` and raw counts in `PRROMenade_table_raw.csv` [[note additional filtering of filtered reads < 50bp was performed to avoid PRROMenade execution errors]]
 4. RoDEO on PRROMenade table (parameters...)
 5. HULK distance matrix (k-mer size 21, Jaccard & Weighted Jaccard distances)
-6. TOTAL QC'd read count table for RPM normalization  (total = low qual + matrix + microbe + unknown)
+6. TOTAL QC'd read count table for RPM normalization  (last column "Kraken.UNCLASSIFIED" has the count of quality filtered PhiX filtered read pairs): `Milk66samples_NewFiltering_ReadCounts_forRPM.csv`
