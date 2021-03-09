@@ -80,6 +80,7 @@ microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n
 
 control_samples = c("NEG_DNAextr*", "Kefir*", "SequencingBlank*")
 microbes = dplyr::select(microbes_psct, -matches(control_samples)) 
+# this matches the Kraken datafile Niina added to github (note no control, keffir, etc)
 colnames(microbes) = str_remove(colnames(microbes), "_ds[0-9]+")
 
 

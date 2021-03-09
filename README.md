@@ -5,7 +5,7 @@ Filtered matrix-removed sequences are in MCAW DS `10835051`
 
 Golden datasets to use in analyses:
 
-1. **Kraken genus table using RefSeq DB** (kraken score threshold 0.05):`Kraken_genus_DS10828562.txt` and RPM version `Kraken_genus_RPM_from_DS10828562`
+1. **Kraken genus table using RefSeq DB** (kraken score threshold 0.05):`Kraken_genus_DS10828562.txt` raw reads counts and RPM version `Kraken_genus_RPM_from_DS10828562`
 3. **RoDEO on Kraken table** (genus level, P=10, I=100, R=10^7): `GenusCounts_allMicrobes_RoDEO_P10.csv`
 4. **PRROMenade table using FGP DB** (level 4 pushed-down, using 2020 bact+virus FGP DB, min. match 8 AA, features first scaled by total sum and summed per pair, filtering of rare features): `PRROMenade_level4_8AA.csv` [[note1: does not include the large kefir sample; note2: additional filtering of filtered reads < 50bp was performed to avoid PRROMenade execution errors]]
 5. **RoDEO on PRROMenade table** (PRROMenade level4 on FGP DB, P=10, I=100, R=10^7): `PRROMenade_L4AA8_RoDEO_P10.csv`
