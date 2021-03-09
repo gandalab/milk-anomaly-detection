@@ -1,0 +1,204 @@
+---
+title: "community-figures"
+author: "K.L. Beck"
+date: "6/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+
+
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(RColorBrewer)
+library(robCompositions)
+library(reshape)
+library(stringr)
+library(vegan)
+
+options(scipen = 10)
+```
+
+## TODOs:
+- Update alpha data div to sort by date and color by category
+- split out supported plot as 1% going to other and viz stack and beta div
+- split out supported plot as top 25 or quartile and viz stack and beta div
+- beta div -- can this be colored by alpha diversity?
+- Ban will work on updating ordination plots, plus correlation plots
+- Niina will run hulk
+
+
+## Visualizations for Anomaly Detection Prelim Samples
+
+```{r loadData}
+
+# load microbe tables
+microbePath = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_microbe_genus_DS10828562.txt"
+microbes_raw = read.csv(microbePath, header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+
+microbes_reads = microbes_raw
+colnames(microbes_reads) = str_remove(colnames(microbes_reads), "Cumul.reads_dt")
+
+
+# order columns by sorted sample name
+microbes_reads = cbind(microbes_raw$Name, microbes_reads[,order(colnames(microbes_reads))])
+microbes_reads$Name = NULL
+colnames(microbes_reads)[1] = "Genus_Name"
+
+# uncomment this for read count export to tabular data
+# write.csv(microbes_reads, "~/read_count.txt", quote = FALSE, row.names = FALSE)
+
+```
+
+```{r computeRPM}
+
+summaryFile = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_ReadCounts_forRPM.txt"
+macros_raw = read.table(summaryFile, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+
+# reorder for easier merging below
+macros = arrange(macros_raw, Display.TAG)
+
+
+microbes_psct = microbes_reads
+
+# additionally pseudo-count raw reads assigned to compute adjusted RPM
+scale_const = 1000000
+microbes_psct[, -1] = microbes_psct[, -1] + 1        # add one, removing all zeros
+
+microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n) {
+	microbes_psct[,n] / macros$Kraken.UNCLASSIFIED[n-1] * scale_const}
+	)
+
+# Export all microbes in RPM
+# write.table(microbes_psct, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-all-samples-new-filtering-RPM-all-microbes_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+```
+
+```{r subsetGenusTable}
+
+control_samples = c("NEG_DNAextr*", "Kefir*", "SequencingBlank*")
+microbes = dplyr::select(microbes_psct, -matches(control_samples)) 
+colnames(microbes) = str_remove(colnames(microbes), "_ds[0-9]+")
+
+
+rpm_threshold = 0.1
+
+# microbes present above rpm threshold in  **all** samples
+consensus_index = sapply(1:nrow(microbes), function(n) all(microbes[n,2:ncol(microbes)] > rpm_threshold))
+consensus_microbes = microbes[consensus_index==TRUE, ]
+
+consensus_microbes_melted = melt(consensus_microbes)
+
+# microbes present above rpm threshold in  **any** samples
+supported_index = sapply(1:nrow(microbes), function(n) any(microbes[n,2:ncol(microbes)] > rpm_threshold))
+supported_microbes = microbes[supported_index==TRUE, ]
+
+supported_microbes_melted = melt(supported_microbes)
+# write.table(supported_microbes, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-real-samples-new-filtering-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
+
+
+# extract dates and sample category from sample names
+
+treatment_names = sapply(1:ncol(supported_microbes), function(n) 
+	c(paste(str_split(string = colnames(supported_microbes), pattern = "_")[[n]][1:2], collapse = "_"))
+	)
+
+sample_dates = sapply(1:ncol(supported_microbes), function(n) 
+	str_split(string = colnames(supported_microbes), pattern = "_")[[n]][3]
+	)
+
+sample_details = data.frame("full_sample_name" = colnames(supported_microbes)[-1],
+							"sample_dates"     = sample_dates[-1],
+							"treatment_names"  = treatment_names[-1]
+							)
+
+```
+
+
+
+
+## Microbial Community
+```{r viz}
+
+ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Consensus genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+ggplot(supported_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+## Ecological metrics - alpha diversity
+```{r alpha_div}
+
+alpha_div = data.frame("sample" = colnames(supported_microbes)[-1],
+											 "nMicrobes" = sapply(2:ncol(supported_microbes), 
+			 																function(x) 
+																				sum(supported_microbes[ , x] >= rpm_threshold))
+)
+
+alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
+
+median_baseline_div = median(alpha_div$nMicrobes[which(grepl("Baseline*", alpha_div$sample))])
+
+ggplot(alpha_div, aes(x=sample, y=nMicrobes)) +
+	geom_bar(stat="identity") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	geom_hline(yintercept = median_baseline_div)
+
+
+```
+
+## Ecological metrics - beta diversity
+
+```{r beta_div}
+rownames(supported_microbes) = supported_microbes$Genus_Name
+ad = aDist(t(supported_microbes[,-1]))
+hc_complete = hclust(ad, method = "complete")
+hc_average  = hclust(ad, method = "average")
+# clustering method could be complete (default) or any other 
+# http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.876.3979&rep=rep1&type=pdf
+
+# par(mfrow=c(2,1))
+plot(hc_complete, main="Aitchison distance- Complete clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
+plot(hc_average,  main="Aitchison distance- Average clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
+# hang = -1 recommended by bala
+
+# as recommended by Gloor froniers in microbiology supplement 2016
+# https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
+# coloring from https://rpubs.com/gaston/dendrograms
+# make the dendrogram
+hc <- as.dendrogram(hclust(ad, method="ward.D2"))
+hcd <- hclust(ad, method="ward.D2")
+# function to get color labels
+colLab <- function(n) {
+    if (is.leaf(n)) {
+        a <- attributes(n)
+        #labCol <- labelColors[clusMember[which(names(clusMember) == a$label)]]
+        # MFMB-04, 20, 38 are all host contaminated
+        # MFMB- <80 are the first supplier
+        # MFMB- >=80 are the second supplier
+        labCol <- if (grepl("Outside*", a$label) == TRUE ) "red" else if (grepl("TxAntibiotic", a$label) == TRUE ) "#339933" else "#6699FF"
+        attr(n, "nodePar") <- c(a$nodePar, lab.col = labCol)
+    }
+    n
+}
+# using dendrapply
+clusDendro = dendrapply(hc, colLab)
+par(mar = c(11, 2, 2, 2))
+plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance)", ylab="Aitchison distance")
+legend("topright", 
+     legend = c("Baseline" , "Tx Antibiotic" , "Outside Farm"), 
+     col = c("#6699FF", "#339933", "red"), 
+     pch = 20, bty = "n",  pt.cex = 1.5, cex = 1, 
+     text.col = c("#6699FF", "#339933", "red"), horiz = FALSE, inset = c(0.05, 0.03))
+```
