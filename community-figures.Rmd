@@ -28,6 +28,7 @@ options(scipen = 10)
 - beta div -- can this be colored by alpha diversity?
 - Ban will work on updating ordination plots, plus correlation plots
 - Niina will run hulk
+- TODO generate a table on just controls - keffir is a positive control
 
 
 ## Visualizations for Anomaly Detection Prelim Samples
