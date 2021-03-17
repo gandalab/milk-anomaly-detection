@@ -103,6 +103,61 @@ supported_microbes_melted = melt(supported_microbes)
 ```
 
 ```{r exploreDecontam}
+# vignette
+# https://benjjneb.github.io/decontam/vignettes/decontam_intro.html
+
+library(decontam)
+
+# decontam input:
+# rows = samples, organisms = columns
+drop_samples = c("Kefir*", "SequencingBlank*")
+microbes_w_controls = dplyr::select(microbes_psct, -matches(drop_samples)) 
+# note ^ no RPM threshold applied here. this can be applied after decontamination
+
+# clean and round RPM values
+genera_labels = microbes_w_controls$Genus_Name
+microbes_w_controls_t = t(data.matrix(microbes_w_controls[ ,-1]))
+colnames(microbes_w_controls_t) = genera_labels
+microbes_w_controls_t_ceiling = ceiling(microbes_w_controls_t)
+
+microbes_w_controls_t_floor = floor(microbes_w_controls_t)
+
+# extraction controls
+neg_labels = grepl("Neg", row.names(microbes_w_controls_t))
+
+contaminants = isContaminant(microbes_w_controls_t_ceiling, neg = neg_labels, threshold = 0.5, normalize = FALSE)
+contaminants_floor = isContaminant(microbes_w_controls_t_floor, neg = neg_labels, threshold = 0.5, normalize = FALSE)
+# prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
+table(contaminants$contaminant)
+table(contaminants_floor$contaminant)
+
+# other notes:
+# normalize param does not change our results either way
+# decontam does have an internal normalization mechanism but this sums everything to 1
+# which breaks the conventions of CoDA and should not be use
+# question asked here: https://github.com/benjjneb/decontam/issues/45
+# best approximation is to convert our floats to a rounded integer
+# note here: https://github.com/benjjneb/decontam/issues/45
+
+
+# decontam input:
+# rows = samples, organisms = columns
+drop_samples = c("Kefir*", "SequencingBlank*")
+microbes_w_controls_r = dplyr::select(microbes_reads, -matches(drop_samples)) 
+# note ^ no RPM threshold applied here. this can be applied after decontamination
+
+# clean and round RPM values
+genera_labels_r = microbes_w_controls_r$Genus_Name
+microbes_w_controls_r_t = t(data.matrix(microbes_w_controls_r[ ,-1]))
+colnames(microbes_w_controls_r_t) = genera_labels_r
+
+# extraction controls
+neg_labels = grepl("Neg", row.names(microbes_w_controls_r_t))
+
+contaminants_r = isContaminant(microbes_w_controls_r_t, neg = neg_labels, threshold = 0.5, normalize = TRUE)
+# prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
+table(contaminants_r$contaminant)
+
 
 ```
 
