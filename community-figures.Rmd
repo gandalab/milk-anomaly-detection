@@ -77,7 +77,7 @@ microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n
 
 ```
 
-```{r subsetGenusTable}
+```{r generateFeatureTable}
 
 control_samples = c("NEG_DNAextr*", "Kefir*", "SequencingBlank*")
 microbes = dplyr::select(microbes_psct, -matches(control_samples)) 
@@ -100,7 +100,14 @@ supported_microbes = microbes[supported_index==TRUE, ]
 supported_microbes_melted = melt(supported_microbes)
 # write.table(supported_microbes, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-real-samples-new-filtering-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
+```
 
+```{r exploreDecontam}
+
+```
+
+
+```{r extractSampleMetadata}
 # extract dates and sample category from sample names
 
 treatment_names = sapply(1:ncol(supported_microbes), function(n) 
@@ -124,7 +131,8 @@ sample_details = data.frame("full_sample_name" = colnames(supported_microbes)[-1
 ## Microbial Community
 ```{r viz}
 
-ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+p_consensus_stacked_bar = ggplot(consensus_microbes_melted, 
+								 aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Consensus genera microbial composition") +
@@ -153,6 +161,7 @@ median_baseline_div = median(alpha_div$nMicrobes[which(grepl("Baseline*", alpha_
 
 ggplot(alpha_div, aes(x=sample, y=nMicrobes)) +
 	geom_bar(stat="identity") +
+	ggtitle("Alpha diversity per sample") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 	geom_hline(yintercept = median_baseline_div)
 
