@@ -108,27 +108,28 @@ supported_microbes_melted = melt(supported_microbes)
 
 library(decontam)
 
-# decontam input:
-# rows = samples, organisms = columns
+# ----- eval decontam w rounded RPM values ----- #
+# decontam input: rows = samples, organisms = columns
 drop_samples = c("Kefir*", "SequencingBlank*")
 microbes_w_controls = dplyr::select(microbes_psct, -matches(drop_samples)) 
 # note ^ no RPM threshold applied here. this can be applied after decontamination
 
-# clean and round RPM values
 genera_labels = microbes_w_controls$Genus_Name
 microbes_w_controls_t = t(data.matrix(microbes_w_controls[ ,-1]))
 colnames(microbes_w_controls_t) = genera_labels
-microbes_w_controls_t_ceiling = ceiling(microbes_w_controls_t)
 
+
+# round RPM values for integer requirement
+microbes_w_controls_t_ceiling = ceiling(microbes_w_controls_t)
 microbes_w_controls_t_floor = floor(microbes_w_controls_t)
 
 # extraction controls
 neg_labels = grepl("Neg", row.names(microbes_w_controls_t))
 
-contaminants = isContaminant(microbes_w_controls_t_ceiling, neg = neg_labels, threshold = 0.5, normalize = FALSE)
+contaminants_ceil = isContaminant(microbes_w_controls_t_ceiling, neg = neg_labels, threshold = 0.5, normalize = FALSE)
 contaminants_floor = isContaminant(microbes_w_controls_t_floor, neg = neg_labels, threshold = 0.5, normalize = FALSE)
 # prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
-table(contaminants$contaminant)
+table(contaminants_ceil$contaminant)
 table(contaminants_floor$contaminant)
 
 # other notes:
@@ -139,14 +140,11 @@ table(contaminants_floor$contaminant)
 # best approximation is to convert our floats to a rounded integer
 # note here: https://github.com/benjjneb/decontam/issues/45
 
-
-# decontam input:
-# rows = samples, organisms = columns
+# ----- eval decontam w raw reads ----- #
+# decontam input: rows = samples, organisms = columns
 drop_samples = c("Kefir*", "SequencingBlank*")
 microbes_w_controls_r = dplyr::select(microbes_reads, -matches(drop_samples)) 
-# note ^ no RPM threshold applied here. this can be applied after decontamination
 
-# clean and round RPM values
 genera_labels_r = microbes_w_controls_r$Genus_Name
 microbes_w_controls_r_t = t(data.matrix(microbes_w_controls_r[ ,-1]))
 colnames(microbes_w_controls_r_t) = genera_labels_r
@@ -156,6 +154,9 @@ neg_labels = grepl("Neg", row.names(microbes_w_controls_r_t))
 
 contaminants_r = isContaminant(microbes_w_controls_r_t, neg = neg_labels, threshold = 0.5, normalize = TRUE)
 # prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
+# note, normalization only changes frequency
+# it does not change number of on contaminants or p-values
+
 table(contaminants_r$contaminant)
 
 
