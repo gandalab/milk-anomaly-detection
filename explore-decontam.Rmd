@@ -1,0 +1,112 @@
+---
+title: "explore-decontam"
+author: "K.L. Beck"
+date: "4/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(stringr)
+library(decontam)
+```
+
+## Objective:  
+Explore `decontam` package for use in removing false positives due to lab preparation
+
+```{r loadData}
+
+# load microbe tables
+microbePath = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_microbe_genus_DS10828562.txt"
+microbes_raw = read.csv(microbePath, header = TRUE, stringsAsFactors = FALSE, sep = "\t")
+
+microbes_reads = microbes_raw
+colnames(microbes_reads) = str_remove(colnames(microbes_reads), "Cumul.reads_dt")
+
+
+# order columns by sorted sample name
+microbes_reads = cbind(microbes_raw$Name, microbes_reads[,order(colnames(microbes_reads))])
+microbes_reads$Name = NULL
+colnames(microbes_reads)[1] = "Genus_Name"
+
+# load macros for RPM calculation
+summaryFile = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_ReadCounts_forRPM.txt"
+macros_raw = read.table(summaryFile, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
+
+# reorder for easier merging below
+macros = arrange(macros_raw, Display.TAG)
+
+
+microbes_psct = microbes_reads
+
+# additionally pseudo-count raw reads assigned to compute adjusted RPM
+scale_const = 1000000
+microbes_psct[, -1] = microbes_psct[, -1] + 1        # add one, removing all zeros
+
+microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n) {
+	microbes_psct[,n] / macros$Kraken.UNCLASSIFIED[n-1] * scale_const}
+	)
+
+```
+
+
+### Explore `decontam` Package on RPM Table  
+See tutotial details in package [vignette](https://benjjneb.github.io/decontam/vignettes/decontam_intro.html)
+
+```{r exploreDecontam}
+# ----- eval decontam w rounded RPM values ----- #
+# decontam input: rows = samples, organisms = columns
+drop_samples = c("Kefir*", "SequencingBlank*")
+microbes_w_controls = dplyr::select(microbes_psct, -matches(drop_samples)) 
+# note ^ no RPM threshold applied here. this can be applied after decontamination
+
+genera_labels = microbes_w_controls$Genus_Name
+microbes_w_controls_t = t(data.matrix(microbes_w_controls[ ,-1]))
+colnames(microbes_w_controls_t) = genera_labels
+
+# round RPM values for integer requirement
+microbes_w_controls_t_ceiling = ceiling(microbes_w_controls_t)
+microbes_w_controls_t_floor = floor(microbes_w_controls_t)
+
+# extraction controls
+neg_labels = grepl("Neg", row.names(microbes_w_controls_t))
+
+contaminants_ceil = isContaminant(microbes_w_controls_t_ceiling, neg = neg_labels, threshold = 0.5, normalize = FALSE)
+contaminants_floor = isContaminant(microbes_w_controls_t_floor, neg = neg_labels, threshold = 0.5, normalize = FALSE)
+# prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
+table(contaminants_ceil$contaminant)
+table(contaminants_floor$contaminant)
+```
+
+**Notes:**  
+- normalize param does not change our results either way  
+- decontam does have an internal normalization mechanism but this sums everything to 1, which breaks the conventions of CoDA and should not be use  
+- question asked here: https://github.com/benjjneb/decontam/issues/45  
+- best approximation is to convert our floats to a rounded integer, note here: https://github.com/benjjneb/decontam/issues/45  
+- the difference between contaminant count based on taking the floor or ceiling of the RPM value is highly suspect and likely not a valid result for removal of contaminants  
+
+### Explore `decontam` Package on Raw Reads
+```{r decontamRawReads}
+# ----- eval decontam w raw reads ----- #
+# decontam input: rows = samples, organisms = columns
+drop_samples = c("Kefir*", "SequencingBlank*")
+microbes_w_controls_r = dplyr::select(microbes_reads, -matches(drop_samples)) 
+
+genera_labels_r = microbes_w_controls_r$Genus_Name
+microbes_w_controls_r_t = t(data.matrix(microbes_w_controls_r[ ,-1]))
+colnames(microbes_w_controls_r_t) = genera_labels_r
+
+# extraction controls
+neg_labels = grepl("Neg", row.names(microbes_w_controls_r_t))
+
+contaminants_r = isContaminant(microbes_w_controls_r_t, neg = neg_labels, threshold = 0.5, normalize = TRUE)
+# prevalence method is for negative DNA sequence controls (opposed to DNA concentration values)
+
+table(contaminants_r$contaminant)
+
+```
+**Notes:**  
+- normalization only changes frequency, it does not change number of on contaminants or p-values  
+- performing decontamination on raw reads is preferred. the results are more robust against the package's internal normalization and do not artifically force rounding of floating point numbers  
+- decision: move forward with decontaminating at the raw reads point  
