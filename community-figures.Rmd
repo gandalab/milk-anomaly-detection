@@ -23,13 +23,8 @@ options(scipen = 10)
 ```
 
 ## TODOs:
-- Update alpha data div to sort by date and color by category
-- Calculate shannon entropy for alpha diversity
 - split out supported plot as 1% going to other and viz stack and beta div
 - split out supported plot as top 25 or quartile and viz stack and beta div
-- beta div -- can this be colored by alpha diversity?
-- Sparse contrastive ordination plots
-- Generate a table on just controls - keffir is a positive control
 
 
 ## Visualizations for Anomaly Detection Prelim Samples
@@ -71,6 +66,7 @@ contaminants_r = isContaminant(microbes_w_controls_r_t, neg = neg_labels, thresh
 # it does not change number of on contaminants or p-values
 
 contaminant_genera = row.names(contaminants_r)[which(contaminants_r$contaminant == TRUE)]
+cat(contaminant_genera, sep = "}, \\textit{") # format for overleaf pasting
 
 microbes_reads_decontaminated = microbes_reads[-which(microbes_reads$Genus_Name %in% contaminant_genera), ]
 
@@ -157,14 +153,26 @@ sample_details = data.frame("full_sample_name" = colnames(supported_microbes)[-1
 
 
 ## Microbial Community
-```{r viz}
-
-p_consensus_stacked_bar = ggplot(consensus_microbes_melted, 
-								 aes(x = variable, y = value, fill = Genus_Name)) +
+```{r consensusMicrobes}
+colourCount = length(unique(consensus_microbes_melted$Genus_Name))
+getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+ 
+# manuscript version - updated
+ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Consensus genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = getPalette(colourCount))
+
+# manuscript version 8/16/2021
+ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity", position = "fill") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Consensus genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = getPalette(colourCount))
+
 
 
 ggplot(supported_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
@@ -172,6 +180,7 @@ ggplot(supported_microbes_melted, aes(x = variable, y = value, fill = Genus_Name
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Supported genera microbial composition") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+	
 ```
 
 ## Ecological metrics - alpha diversity
@@ -184,23 +193,93 @@ alpha_div = data.frame("sample" = colnames(supported_microbes)[-1],
 )
 
 alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
+alpha_div$date = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][3])
+alpha_div$type = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][1])
 
 median_baseline_div = median(alpha_div$nMicrobes[which(grepl("Baseline*", alpha_div$sample))])
 
-ggplot(alpha_div, aes(x=sample, y=nMicrobes)) +
-	geom_bar(stat="identity") +
+# reorder(sample, as.Date(date, format = "%y.%m.%d"))
+ggplot(alpha_div, aes(x=date, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity", position = "dodge") +
 	ggtitle("Alpha diversity per sample") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 	geom_hline(yintercept = median_baseline_div)
+
+ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_violin()
+ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_boxplot()
+
+
+supported_microbes_no_outliers = supported_microbes %>% select(!contains(c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16", "OutsideFarm_9", "OutsideFarm_13")))
+
+shannon_div = data.frame("sample" = colnames(supported_microbes)[-1],
+						 "nMicrobes" = sapply(2:ncol(supported_microbes), 
+						 					 function(x) 
+						 					 	diversity(supported_microbes[, x]))
+)
+
+shannon_div$sample = factor(shannon_div$sample, levels = shannon_div$sample)
+shannon_div$date = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][3])
+shannon_div$type = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][1])
+shannon_div$type[which(shannon_div$type == "OutsideFarm")] = "Outside Farm"
+shannon_div$type[which(shannon_div$type == "TxAntibiotic")] = "Antibiotic"
+
+# write.table(shannon_div, "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_partial.txt", sep = "\t")
+
+# filled in with NULL and NA where the category wasn't sampled so div can be plotted by date
+shannon_div_filled_in = read.csv("~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_filled_in.txt", sep = "\t")
+
+outlier_prefixes = c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16", "OutsideFarm_9", "OutsideFarm_13")
+
+# manuscript supplemental figure
+# TODO include outliers
+# TODO update type labels
+ggplot(shannon_div_filled_in, aes(x=date, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity", position = "dodge") +
+	ggtitle("Shannon Index per Sample") +
+	ylab("Shannon Index") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "OutsideFarm" = rgb(0.301, 0.745, 0.933), 
+								 "TxAntibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+	)
+
+# actual manuscript figure - FINAL
+ggplot(shannon_div, aes(x=sample, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity") +
+	ggtitle("Shannon Index per Sample") +
+	ylab("Shannon Index") +
+	xlab("Sample") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
+								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+					  )
+
+# actual manuscript figure
+# TODO drop rows containing outliers
+# shannon_div_no_outliers = shannon_div[-which(shannon_div$sample %in% ),]
+ggplot(shannon_div, aes(x=type, y=nMicrobes, fill = type)) +
+	geom_violin(trim = FALSE) + 
+	geom_boxplot(width = 0.2, fill  = ('transparent')) +
+	ylab("Shannon Index") +
+	xlab("Sample Category") +
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
+								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+	)
 
 
 ```
 
 ## Ecological metrics - beta diversity
 
-```{r beta_div}
+```{r beta_div_all_samples}
 rownames(supported_microbes) = supported_microbes$Genus_Name
 ad = aDist(t(supported_microbes[,-1]))
+# write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-all-samples.txt", sep="\t")
 hc_complete = hclust(ad, method = "complete")
 hc_average  = hclust(ad, method = "average")
 # clustering method could be complete (default) or any other 
@@ -230,7 +309,7 @@ colLab <- function(n) {
     }
     n
 }
-# using dendrapply
+# using dendrapply, manuscript version
 clusDendro = dendrapply(hc, colLab)
 par(mar = c(11, 2, 2, 2))
 plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance)", ylab="Aitchison distance")
@@ -239,4 +318,91 @@ legend("topright",
      col = c("#6699FF", "#339933", "red"), 
      pch = 20, bty = "n",  pt.cex = 1.5, cex = 1, 
      text.col = c("#6699FF", "#339933", "red"), horiz = FALSE, inset = c(0.05, 0.03))
+```
+
+
+```{r beta_div_outliers_removed}
+baseline_samples_no_outliers = supported_microbes %>% select(!contains(c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16")))
+rownames(baseline_samples_no_outliers) = supported_microbes$Genus_Name
+
+ad = aDist(t(baseline_samples_no_outliers[,-1]))
+# write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-outliers-removed.txt", sep="\t")
+hc_complete = hclust(ad, method = "complete")
+hc_average  = hclust(ad, method = "average")
+# clustering method could be complete (default) or any other 
+# http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.876.3979&rep=rep1&type=pdf
+
+# par(mfrow=c(2,1))
+plot(hc_complete, main="Aitchison distance- Complete clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
+plot(hc_average,  main="Aitchison distance- Average clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
+# hang = -1 recommended by bala
+
+# as recommended by Gloor froniers in microbiology supplement 2016
+# https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
+# coloring from https://rpubs.com/gaston/dendrograms
+# make the dendrogram
+hc <- as.dendrogram(hclust(ad, method="ward.D2"))
+hcd <- hclust(ad, method="ward.D2")
+# function to get color labels
+colLab <- function(n) {
+    if (is.leaf(n)) {
+        a <- attributes(n)
+        #labCol <- labelColors[clusMember[which(names(clusMember) == a$label)]]
+        # MFMB-04, 20, 38 are all host contaminated
+        # MFMB- <80 are the first supplier
+        # MFMB- >=80 are the second supplier
+        labCol <- if (grepl("Outside*", a$label) == TRUE ) "red" else if (grepl("TxAntibiotic", a$label) == TRUE ) "#339933" else "#6699FF"
+        attr(n, "nodePar") <- c(a$nodePar, lab.col = labCol)
+    }
+    n
+}
+# using dendrapply, updated w no outliers
+clusDendro = dendrapply(hc, colLab)
+par(mar = c(11, 2, 2, 2))
+plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance, outliers removed)", ylab="Aitchison distance")
+legend("topright", 
+     legend = c("Baseline" , "Tx Antibiotic" , "Outside Farm"), 
+     col = c("#6699FF", "#339933", "red"), 
+     pch = 20, bty = "n",  pt.cex = 1.5, cex = 1, 
+     text.col = c("#6699FF", "#339933", "red"), horiz = FALSE, inset = c(0.05, 0.03))
+```
+
+
+```{r beta_div_baseline_only}
+baseline_samples = supported_microbes %>% select(contains("Baseline"))
+rownames(baseline_samples) = supported_microbes$Genus_Name
+baseline_samples_meta = data.frame("sample_name" = colnames(baseline_samples), 
+								   "date" = str_extract(colnames(baseline_samples), "2018\\.[0-9\\.]+")
+)
+
+ad = aDist(t(baseline_samples[,-1]))
+hc_complete = hclust(ad, method = "complete")
+hc_average  = hclust(ad, method = "average")
+# clustering method could be complete (default) or any other 
+# http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.876.3979&rep=rep1&type=pdf
+
+par(mfrow=c(2,1))
+plot(hc_complete, 
+	 main="Aitchison distance- Complete clustering, baseline only", 
+	 ylab="Distance", xlab="Sample Identifier", hang = -1
+	 )
+plot(hc_average,  
+	 main="Aitchison distance- Average clustering, baseline only", 
+	 ylab="Distance", xlab="Sample Identifier", hang = -1
+	 )
+# hang = -1 recommended by bala
+
+# as recommended by Gloor froniers in microbiology supplement 2016
+# https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
+# coloring from https://rpubs.com/gaston/dendrograms
+# make the dendrogram
+hc <- as.dendrogram(hclust(ad, method="ward.D2"))
+hcd <- hclust(ad, method="ward.D2")
+# function to get color labels
+
+plot(hcd,  
+	 main="Aitchison distance- Ward.D2 clustering, baseline only", 
+	 ylab="Distance", xlab="Sample Identifier", hang = -1
+	 )
+
 ```
