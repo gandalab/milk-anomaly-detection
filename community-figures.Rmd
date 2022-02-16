@@ -153,11 +153,11 @@ sample_details = data.frame("full_sample_name" = colnames(supported_microbes)[-1
 
 
 ## Microbial Community
-```{r consensusMicrobes}
+```{r stackedMicrobes}
 colourCount = length(unique(consensus_microbes_melted$Genus_Name))
 getPalette = colorRampPalette(brewer.pal(9, "Set1"))
  
-# manuscript version - updated
+# consensus plots actual RPM - old manuscript version
 ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
 	ylab("Relative abundance") + xlab("Sample") +
@@ -165,7 +165,7 @@ ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name
 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 	scale_fill_manual(values = getPalette(colourCount))
 
-# manuscript version 8/16/2021
+# consensus plots scaled - old manuscript version
 ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity", position = "fill") + 
 	ylab("Relative abundance") + xlab("Sample") +
@@ -174,9 +174,41 @@ ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name
 	scale_fill_manual(values = getPalette(colourCount))
 
 
+# sum each column
+supported_microbes_col_sums = colSums(supported_microbes[,-1])
+# get the per column 10% threshold
+other_min_value = supported_microbes_col_sums * 0.1
 
-ggplot(supported_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+# if the value is less than 10% set it to zero
+supported_microbes_low_abundance_zeroed = supported_microbes
+for (i in 2:ncol(supported_microbes_low_abundance_zeroed)) {
+	supported_microbes_low_abundance_zeroed[which(supported_microbes[,i] < other_min_value[i-1]),i] = 0
+}
+
+# how much per sample is in the other category
+other_values = data.frame(t(supported_microbes_col_sums - colSums(supported_microbes_low_abundance_zeroed[,-1])))
+other_df = data.frame("Genus_Name" = c("Other"),
+					  other_values)
+rownames(other_df) = "Other"
+supported_microbes_w_other = rbind(supported_microbes_low_abundance_zeroed, other_df)
+
+max_val_rpm = sapply(1:nrow(supported_microbes_w_other), function(n)
+	   max(supported_microbes_w_other[n,-1])
+	   )
+supported_w_other_clean = supported_microbes_w_other[which(max_val_rpm > 0), ]
+
+supported_microbes_w_other_m = melt(supported_w_other_clean) 
+
+
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity", position = "fill") + 
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Supported genera microbial composition") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
