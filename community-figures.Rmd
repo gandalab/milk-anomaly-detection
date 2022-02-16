@@ -155,28 +155,118 @@ sample_details = data.frame("full_sample_name" = colnames(supported_microbes)[-1
 ```
 
 
+## Ecological metrics - alpha diversity
+```{r alpha_div}
+
+alpha_div = data.frame("sample" = colnames(supported_microbes)[-1],
+											 "nMicrobes" = sapply(2:ncol(supported_microbes), 
+			 																function(x) 
+																				sum(supported_microbes[ , x] >= rpm_threshold))
+)
+
+alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
+alpha_div$date = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][3])
+alpha_div$type = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][1])
+
+median_baseline_div = median(alpha_div$nMicrobes[which(grepl("Baseline*", alpha_div$sample))])
+
+# reorder(sample, as.Date(date, format = "%y.%m.%d"))
+ggplot(alpha_div, aes(x=date, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity", position = "dodge") +
+	ggtitle("Alpha diversity per sample") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	geom_hline(yintercept = median_baseline_div)
+
+ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_violin()
+ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_boxplot()
+
+
+outlier_prefixes = c("Baseline_04", "Baseline_08", "Baseline_13", "Baseline_16", "OutsideFarm_09", "OutsideFarm_13")
+supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
+
+shannon_div = data.frame("sample" = colnames(supported_microbes)[-1],
+						 "nMicrobes" = sapply(2:ncol(supported_microbes), 
+						 					 function(x) 
+						 					 	diversity(supported_microbes[, x]))
+)
+
+shannon_div$sample = factor(shannon_div$sample, levels = shannon_div$sample)
+shannon_div$date = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][3])
+shannon_div$type = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][1])
+shannon_div$type[which(shannon_div$type == "OutsideFarm")] = "Outside Farm"
+shannon_div$type[which(shannon_div$type == "TxAntibiotic")] = "Antibiotic"
+
+# write.table(shannon_div, "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_partial.txt", sep = "\t")
+
+# filled in with NULL and NA where the category wasn't sampled so div can be plotted by date
+shannon_div_filled_in = read.csv("~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_filled_in.txt", sep = "\t")
+
+
+
+# manuscript supplemental figure - separated by dates
+# TODO include outliers
+# TODO update type labels
+ggplot(shannon_div_filled_in, aes(x=date, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity", position = "dodge") +
+	ggtitle("Shannon Index per Sample") +
+	ylab("Shannon Index") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "OutsideFarm" = rgb(0.301, 0.745, 0.933), 
+								 "TxAntibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+	)
+
+# actual manuscript figure - FINAL
+ggplot(shannon_div, aes(x=sample, y=nMicrobes, fill = type)) +
+	geom_bar(stat="identity") +
+	ggtitle("Shannon Index per Sample") +
+	ylab("Shannon Index") +
+	xlab("Sample") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
+								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+					  )
+
+# actual manuscript figure
+shannon_div_no_outliers = shannon_div[-which(grepl(paste(outlier_prefixes, collapse = "|"), shannon_div$sample)),]
+ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
+	geom_violin(trim = FALSE) + 
+	geom_boxplot(width = 0.2, fill  = ('transparent')) +
+	ylab("Shannon Index") +
+	xlab("Sample Category") +
+	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
+								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
+								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
+								 )
+	)
+
+
+```
 
 
 ## Microbial Community
 ```{r stackedMicrobes}
-colourCount = length(unique(consensus_microbes_melted$Genus_Name))
-getPalette = colorRampPalette(brewer.pal(9, "Set1"))
- 
-# consensus plots actual RPM - old manuscript version
-ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Consensus genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	scale_fill_manual(values = getPalette(colourCount))
-
-# consensus plots scaled - old manuscript version
-ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity", position = "fill") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Consensus genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	scale_fill_manual(values = getPalette(colourCount))
+# colourCount = length(unique(consensus_microbes_melted$Genus_Name))
+# getPalette = colorRampPalette(brewer.pal(9, "Set1"))
+#  
+# # consensus plots actual RPM - old manuscript version
+# ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+# 	geom_bar(stat = "identity") + 
+# 	ylab("Relative abundance") + xlab("Sample") +
+# 	ggtitle(label = "Consensus genera microbial composition") +
+# 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+# 	scale_fill_manual(values = getPalette(colourCount))
+# 
+# # consensus plots scaled - old manuscript version
+# ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
+# 	geom_bar(stat = "identity", position = "fill") + 
+# 	ylab("Relative abundance") + xlab("Sample") +
+# 	ggtitle(label = "Consensus genera microbial composition") +
+# 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+# 	scale_fill_manual(values = getPalette(colourCount))
 
 
 # sum each column
@@ -205,7 +295,7 @@ supported_w_other_clean = supported_microbes_w_other[which(max_val_rpm > 0), ]
 
 supported_microbes_w_other_m = melt(supported_w_other_clean) 
 
-supported_microbes_w_other_m$variable = factor(supported_microbes_w_other_m$variable, levels = colnames(supported_microbes_w_other[-1]))
+# supported_microbes_w_other_m$variable = factor(supported_microbes_w_other_m$variable, levels = colnames(supported_microbes_w_other[-1]))
 #alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
 
 ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
@@ -222,96 +312,7 @@ ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_N
 	
 ```
 
-## Ecological metrics - alpha diversity
-```{r alpha_div}
 
-alpha_div = data.frame("sample" = colnames(supported_microbes)[-1],
-											 "nMicrobes" = sapply(2:ncol(supported_microbes), 
-			 																function(x) 
-																				sum(supported_microbes[ , x] >= rpm_threshold))
-)
-
-alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
-alpha_div$date = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][3])
-alpha_div$type = sapply(1:nrow(alpha_div), function(n) str_split(alpha_div$sample, pattern = "_")[[n]][1])
-
-median_baseline_div = median(alpha_div$nMicrobes[which(grepl("Baseline*", alpha_div$sample))])
-
-# reorder(sample, as.Date(date, format = "%y.%m.%d"))
-ggplot(alpha_div, aes(x=date, y=nMicrobes, fill = type)) +
-	geom_bar(stat="identity", position = "dodge") +
-	ggtitle("Alpha diversity per sample") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	geom_hline(yintercept = median_baseline_div)
-
-ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_violin()
-ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_boxplot()
-
-
-supported_microbes_no_outliers = supported_microbes %>% select(!contains(c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16", "OutsideFarm_9", "OutsideFarm_13")))
-
-shannon_div = data.frame("sample" = colnames(supported_microbes)[-1],
-						 "nMicrobes" = sapply(2:ncol(supported_microbes), 
-						 					 function(x) 
-						 					 	diversity(supported_microbes[, x]))
-)
-
-shannon_div$sample = factor(shannon_div$sample, levels = shannon_div$sample)
-shannon_div$date = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][3])
-shannon_div$type = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div$sample, pattern = "_")[[n]][1])
-shannon_div$type[which(shannon_div$type == "OutsideFarm")] = "Outside Farm"
-shannon_div$type[which(shannon_div$type == "TxAntibiotic")] = "Antibiotic"
-
-# write.table(shannon_div, "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_partial.txt", sep = "\t")
-
-# filled in with NULL and NA where the category wasn't sampled so div can be plotted by date
-shannon_div_filled_in = read.csv("~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_filled_in.txt", sep = "\t")
-
-outlier_prefixes = c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16", "OutsideFarm_9", "OutsideFarm_13")
-
-# manuscript supplemental figure
-# TODO include outliers
-# TODO update type labels
-ggplot(shannon_div_filled_in, aes(x=date, y=nMicrobes, fill = type)) +
-	geom_bar(stat="identity", position = "dodge") +
-	ggtitle("Shannon Index per Sample") +
-	ylab("Shannon Index") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
-								 "OutsideFarm" = rgb(0.301, 0.745, 0.933), 
-								 "TxAntibiotic" = rgb(0.494, 0.184, 0.556)
-								 )
-	)
-
-# actual manuscript figure - FINAL
-ggplot(shannon_div, aes(x=sample, y=nMicrobes, fill = type)) +
-	geom_bar(stat="identity") +
-	ggtitle("Shannon Index per Sample") +
-	ylab("Shannon Index") +
-	xlab("Sample") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1)) + 
-	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
-								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
-								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
-								 )
-					  )
-
-# actual manuscript figure
-# TODO drop rows containing outliers
-# shannon_div_no_outliers = shannon_div[-which(shannon_div$sample %in% ),]
-ggplot(shannon_div, aes(x=type, y=nMicrobes, fill = type)) +
-	geom_violin(trim = FALSE) + 
-	geom_boxplot(width = 0.2, fill  = ('transparent')) +
-	ylab("Shannon Index") +
-	xlab("Sample Category") +
-	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
-								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
-								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
-								 )
-	)
-
-
-```
 
 ## Ecological metrics - beta diversity
 
