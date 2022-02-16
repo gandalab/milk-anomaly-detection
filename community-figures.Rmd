@@ -22,10 +22,6 @@ library(vegan)
 options(scipen = 10)
 ```
 
-## TODOs:
-- split out supported plot as 1% going to other and viz stack and beta div
-- split out supported plot as top 25 or quartile and viz stack and beta div
-
 
 ## Visualizations for Anomaly Detection Prelim Samples
 
@@ -108,7 +104,8 @@ control_samples = c("NEG_DNAextr*", "Kefir*", "SequencingBlank*")
 microbes = dplyr::select(microbes_psct, -matches(control_samples)) 
 # this matches the Kraken datafile Niina added to github (note no control, keffir, etc)
 colnames(microbes) = str_remove(colnames(microbes), "_ds[0-9]+")
-
+# add preceding zeros to sample names
+colnames(microbes) = str_replace(string = colnames(microbes), pattern = "_([0-9])_", replacement = "_0\\1_")
 
 rpm_threshold = 0.1
 
@@ -120,9 +117,17 @@ consensus_microbes_melted = melt(consensus_microbes)
 
 # microbes present above rpm threshold in  **any** samples
 supported_index = sapply(1:nrow(microbes), function(n) any(microbes[n,2:ncol(microbes)] > rpm_threshold))
-supported_microbes = microbes[supported_index==TRUE, ]
+supported_microbes_unordered = microbes[supported_index==TRUE, ]
+
+# sort by sample name correctly
+supported_microbes_ordered = supported_microbes_unordered[ , order(names(supported_microbes_unordered))]
+supported_microbes_ordered$Genus_Name = NULL
+supported_microbes = cbind("Genus_Name" = supported_microbes_unordered$Genus_Name, supported_microbes_ordered)
 
 supported_microbes_melted = melt(supported_microbes)
+
+levels(supported_microbes_melted$variable)
+
 # old export
 # write.table(supported_microbes, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-real-samples-new-filtering-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 # decontam, new export
@@ -200,7 +205,8 @@ supported_w_other_clean = supported_microbes_w_other[which(max_val_rpm > 0), ]
 
 supported_microbes_w_other_m = melt(supported_w_other_clean) 
 
-
+supported_microbes_w_other_m$variable = factor(supported_microbes_w_other_m$variable, levels = colnames(supported_microbes_w_other[-1]))
+#alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
 
 ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
