@@ -177,9 +177,10 @@ ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name
 # sum each column
 supported_microbes_col_sums = colSums(supported_microbes[,-1])
 # get the per column 10% threshold
-other_min_value = supported_microbes_col_sums * 0.1
+other_threshold = 0.01
+other_min_value = supported_microbes_col_sums * other_threshold
 
-# if the value is less than 10% set it to zero
+# if the value is less than threshold set it to zero
 supported_microbes_low_abundance_zeroed = supported_microbes
 for (i in 2:ncol(supported_microbes_low_abundance_zeroed)) {
 	supported_microbes_low_abundance_zeroed[which(supported_microbes[,i] < other_min_value[i-1]),i] = 0
