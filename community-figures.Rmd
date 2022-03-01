@@ -352,6 +352,8 @@ colLab <- function(n) {
     }
     n
 }
+
+
 # using dendrapply, manuscript version
 clusDendro = dendrapply(hc, colLab)
 par(mar = c(11, 2, 2, 2))
@@ -365,11 +367,9 @@ legend("topright",
 
 
 ```{r beta_div_outliers_removed}
-# TODO start here to confirm outlier removal
-baseline_samples_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
-rownames(baseline_samples_no_outliers) = supported_microbes$Genus_Name
+rownames(supported_microbes_no_outliers) = supported_microbes_no_outliers$Genus_Name
 
-ad = aDist(t(baseline_samples_no_outliers[,-1]))
+ad = aDist(t(supported_microbes_no_outliers[,-1]))
 # write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-outliers-removed.txt", sep="\t")
 hc_complete = hclust(ad, method = "complete")
 hc_average  = hclust(ad, method = "average")
@@ -395,20 +395,26 @@ colLab <- function(n) {
         # MFMB-04, 20, 38 are all host contaminated
         # MFMB- <80 are the first supplier
         # MFMB- >=80 are the second supplier
-        labCol <- if (grepl("Outside*", a$label) == TRUE ) "red" else if (grepl("TxAntibiotic", a$label) == TRUE ) "#339933" else "#6699FF"
+        labCol <- if (grepl("Outside*", a$label) == TRUE ) "#4DBEEE" else if (grepl("TxAntibiotic", a$label) == TRUE ) "#7E2F8E" else "#0072BD"
         attr(n, "nodePar") <- c(a$nodePar, lab.col = labCol)
     }
     n
 }
+
+# "Baseline" = rgb(0, 0.447, 0.741), #0072BD
+# "Outside Farm" = rgb(0.301, 0.745, 0.933), #4DBEEE 
+# "Antibiotic" = rgb(0.494, 0.184, 0.556), #7E2F8E
+
+
 # using dendrapply, updated w no outliers
 clusDendro = dendrapply(hc, colLab)
 par(mar = c(11, 2, 2, 2))
 plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance, outliers removed)", ylab="Aitchison distance")
 legend("topright", 
-     legend = c("Baseline" , "Tx Antibiotic" , "Outside Farm"), 
-     col = c("#6699FF", "#339933", "red"), 
+     legend = c("Baseline" , "Outside Farm", "Tx Antibiotic"), 
+     col = c("#0072BD", "#4DBEEE", "#7E2F8E"), 
      pch = 20, bty = "n",  pt.cex = 1.5, cex = 1, 
-     text.col = c("#6699FF", "#339933", "red"), horiz = FALSE, inset = c(0.05, 0.03))
+     text.col = c("#0072BD", "#4DBEEE", "#7E2F8E"), horiz = FALSE, inset = c(0.05, 0.03))
 ```
 
 
