@@ -182,7 +182,6 @@ ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_boxplot()
 
 
 outlier_prefixes = c("Baseline_04", "Baseline_08", "Baseline_13", "Baseline_16", "OutsideFarm_09", "OutsideFarm_13")
-supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
 
 shannon_div = data.frame("sample" = colnames(supported_microbes)[-1],
 						 "nMicrobes" = sapply(2:ncol(supported_microbes), 
@@ -230,7 +229,7 @@ ggplot(shannon_div, aes(x=sample, y=nMicrobes, fill = type)) +
 								 )
 					  )
 
-# actual manuscript figure
+# actual manuscript figure - FINAL
 shannon_div_no_outliers = shannon_div[-which(grepl(paste(outlier_prefixes, collapse = "|"), shannon_div$sample)),]
 ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 	geom_violin(trim = FALSE) + 
@@ -269,16 +268,18 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 # 	scale_fill_manual(values = getPalette(colourCount))
 
 
+supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
+
 # sum each column
-supported_microbes_col_sums = colSums(supported_microbes[,-1])
-# get the per column 10% threshold
-other_threshold = 0.01
+supported_microbes_col_sums = colSums(supported_microbes_no_outliers[,-1])
+# get the per column threshold
+other_threshold = 0.05
 other_min_value = supported_microbes_col_sums * other_threshold
 
 # if the value is less than threshold set it to zero
-supported_microbes_low_abundance_zeroed = supported_microbes
+supported_microbes_low_abundance_zeroed = supported_microbes_no_outliers
 for (i in 2:ncol(supported_microbes_low_abundance_zeroed)) {
-	supported_microbes_low_abundance_zeroed[which(supported_microbes[,i] < other_min_value[i-1]),i] = 0
+	supported_microbes_low_abundance_zeroed[which(supported_microbes_no_outliers[,i] < other_min_value[i-1]),i] = 0
 }
 
 # how much per sample is in the other category
@@ -295,21 +296,22 @@ supported_w_other_clean = supported_microbes_w_other[which(max_val_rpm > 0), ]
 
 supported_microbes_w_other_m = melt(supported_w_other_clean) 
 
-# supported_microbes_w_other_m$variable = factor(supported_microbes_w_other_m$variable, levels = colnames(supported_microbes_w_other[-1]))
-#alpha_div$sample = factor(alpha_div$sample, levels = alpha_div$sample)
+supported_microbes_w_other_m$Genus_Name = relevel(factor(supported_microbes_w_other_m$Genus_Name), ref = 'Other')
+
 
 ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Supported genera microbial composition") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# exported as 1377 x 827 px
 
 ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity", position = "fill") + 
 	ylab("Relative abundance") + xlab("Sample") +
 	ggtitle(label = "Supported genera microbial composition") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-	
+# exported as 1377 x 827 px
 ```
 
 
@@ -317,6 +319,7 @@ ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_N
 ## Ecological metrics - beta diversity
 
 ```{r beta_div_all_samples}
+# ALL SAMPLES
 rownames(supported_microbes) = supported_microbes$Genus_Name
 ad = aDist(t(supported_microbes[,-1]))
 # write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-all-samples.txt", sep="\t")
@@ -362,7 +365,8 @@ legend("topright",
 
 
 ```{r beta_div_outliers_removed}
-baseline_samples_no_outliers = supported_microbes %>% select(!contains(c("Baseline_4", "Baseline_8", "Baseline_13", "Baseline_16")))
+# TODO start here to confirm outlier removal
+baseline_samples_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
 rownames(baseline_samples_no_outliers) = supported_microbes$Genus_Name
 
 ad = aDist(t(baseline_samples_no_outliers[,-1]))
