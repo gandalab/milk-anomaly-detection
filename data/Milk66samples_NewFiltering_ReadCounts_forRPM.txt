@@ -1,67 +1,67 @@
-Dataset,Owner,Created,Category,Label,State,Workflow,Grouped,Display.TAG,Kraken.UNCLASSIFIED,
-10793891,nshaimin,6/12/2020 14:17,KRAKEN,phix filtered 10793881_TxAntibiotic_6_2018-09-20,READY,Kraken,TRUE,TxAntibiotic_6_2018-09-20,57879320,
-10793892,nshaimin,6/12/2020 14:18,KRAKEN,phix filtered 10793888_TxAntibiotic_8_2018-09-26,READY,Kraken,TRUE,TxAntibiotic_8_2018-09-26,56578725,
-10793893,nshaimin,6/12/2020 14:22,KRAKEN,phix filtered 10793879_TxAntibiotic_5_2018-09-19,READY,Kraken,TRUE,TxAntibiotic_5_2018-09-19,65976721,
-10793894,nshaimin,6/12/2020 14:13,KRAKEN,phix filtered 10793878_TxAntibiotic_12_2018-10-05,READY,Kraken,TRUE,TxAntibiotic_12_2018-10-05,51421555,
-10793895,nshaimin,6/12/2020 14:12,KRAKEN,phix filtered 10793887_TxAntibiotic_9_2018-09-29,READY,Kraken,TRUE,TxAntibiotic_9_2018-09-29,52073048,
-10793896,nshaimin,6/12/2020 14:23,KRAKEN,phix filtered 10793882_TxAntibiotic_2_2018-09-07,READY,Kraken,TRUE,TxAntibiotic_2_2018-09-07,68697961,
-10793897,nshaimin,6/12/2020 13:55,KRAKEN,phix filtered 10793885_TxAntibiotic_11_2018-10-04,READY,Kraken,TRUE,TxAntibiotic_11_2018-10-04,15808729,
-10793898,nshaimin,6/12/2020 14:07,KRAKEN,phix filtered 10793884_TxAntibiotic_10_2018-10-03,READY,Kraken,TRUE,TxAntibiotic_10_2018-10-03,44249663,
-10793899,nshaimin,6/12/2020 14:23,KRAKEN,phix filtered 10793886_TxAntibiotic_1_2018-09-06,READY,Kraken,TRUE,TxAntibiotic_1_2018-09-06,58717993,
-10793900,nshaimin,6/12/2020 14:32,KRAKEN,phix filtered 10793883_TxAntibiotic_4_2018-09-14,READY,Kraken,TRUE,TxAntibiotic_4_2018-09-14,51513083,
-10796101,nshaimin,6/12/2020 14:42,KRAKEN,phix filtered 10793880_TxAntibiotic_3_2018-09-13,READY,Kraken,TRUE,TxAntibiotic_3_2018-09-13,64111296,
-10796102,nshaimin,6/12/2020 14:32,KRAKEN,phix filtered 10793889_TxAntibiotic_7_2018-09-21,READY,Kraken,TRUE,TxAntibiotic_7_2018-09-21,42763541,
-10804086,nshaimin,6/15/2020 20:47,KRAKEN,phix filtered Milk Baseline 10804055_Baseline_7_2018-09-11,READY,Kraken,TRUE,Baseline_7_2018-09-11,60456120,
-10804087,nshaimin,6/15/2020 20:50,KRAKEN,phix filtered Milk Baseline 10804052_Baseline_3_2018-09-07,READY,Kraken,TRUE,Baseline_3_2018-09-07,68930806,
-10804088,nshaimin,6/15/2020 20:46,KRAKEN,phix filtered Milk Baseline 10804061_Baseline_11_2018-09-15,READY,Kraken,TRUE,Baseline_11_2018-09-15,62801926,
-10804089,nshaimin,6/15/2020 20:40,KRAKEN,phix filtered Milk Baseline 10804075_Baseline_2_2018-09-06,READY,Kraken,TRUE,Baseline_2_2018-09-06,53837643,
-10804090,nshaimin,6/15/2020 20:45,KRAKEN,phix filtered Milk Baseline 10804084_Baseline_23_2018-09-27,READY,Kraken,TRUE,Baseline_23_2018-09-27,64495591,
-10804091,nshaimin,6/15/2020 20:47,KRAKEN,phix filtered Milk Baseline 10804059_Baseline_20_2018-09-24,READY,Kraken,TRUE,Baseline_20_2018-09-24,67052503,
-10804092,nshaimin,6/15/2020 20:32,KRAKEN,phix filtered Milk Baseline 10804072_Baseline_31_2018-10-05,READY,Kraken,TRUE,Baseline_31_2018-10-05,37396911,
-10804093,nshaimin,6/15/2020 20:35,KRAKEN,phix filtered Milk Baseline 10804054_Baseline_17_2018-09-21,READY,Kraken,TRUE,Baseline_17_2018-09-21,47513967,
-10804094,nshaimin,6/15/2020 21:00,KRAKEN,phix filtered Milk Baseline 10804081_Baseline_30_2018-10-04,READY,Kraken,TRUE,Baseline_30_2018-10-04,60444064,
-10804095,nshaimin,6/15/2020 21:01,KRAKEN,phix filtered Milk Baseline 10804073_Baseline_33_2018-10-07,READY,Kraken,TRUE,Baseline_33_2018-10-07,56206807,
-10804096,nshaimin,6/15/2020 21:15,KRAKEN,phix filtered Milk Baseline 10804062_Baseline_29_2018-10-03,READY,Kraken,TRUE,Baseline_29_2018-10-03,73471806,
-10804097,nshaimin,6/15/2020 21:12,KRAKEN,phix filtered Milk Baseline 10804077_Baseline_8_2018-09-12,READY,Kraken,TRUE,Baseline_8_2018-09-12,57457988,
-10804098,nshaimin,6/15/2020 21:16,KRAKEN,phix filtered Milk Baseline 10804064_Baseline_26_2018-09-30,READY,Kraken,TRUE,Baseline_26_2018-09-30,52906905,
-10804099,nshaimin,6/15/2020 21:19,KRAKEN,phix filtered Milk Baseline 10804076_Baseline_13_2018-09-17,READY,Kraken,TRUE,Baseline_13_2018-09-17,62513337,
-10804100,nshaimin,6/15/2020 21:16,KRAKEN,phix filtered Milk Baseline 10804057_Baseline_19_2018-09-23,READY,Kraken,TRUE,Baseline_19_2018-09-23,56573329,
-10806451,nshaimin,6/15/2020 21:12,KRAKEN,phix filtered Milk Baseline 10804082_Baseline_14_2018-09-18,READY,Kraken,TRUE,Baseline_14_2018-09-18,53048232,
-10806452,nshaimin,6/15/2020 21:36,KRAKEN,phix filtered Milk Baseline 10804078_Baseline_9_2018-09-13,READY,Kraken,TRUE,Baseline_9_2018-09-13,77647865,
-10806453,nshaimin,6/15/2020 21:33,KRAKEN,phix filtered Milk Baseline 10804070_Baseline_32_2018-10-06,READY,Kraken,TRUE,Baseline_32_2018-10-06,65268857,
-10806454,nshaimin,6/15/2020 21:37,KRAKEN,phix filtered Milk Baseline 10804066_Baseline_22_2018-09-26,READY,Kraken,TRUE,Baseline_22_2018-09-26,53868747,
-10806455,nshaimin,6/15/2020 21:39,KRAKEN,phix filtered Milk Baseline 10804068_Baseline_10_2018-09-14,READY,Kraken,TRUE,Baseline_10_2018-09-14,56819265,
-10806456,nshaimin,6/15/2020 21:49,KRAKEN,phix filtered Milk Baseline 10804056_Baseline_25_2018-09-29,READY,Kraken,TRUE,Baseline_25_2018-09-29,71828466,
-10806457,nshaimin,6/15/2020 21:50,KRAKEN,phix filtered Milk Baseline 10804060_Baseline_6_2018-09-10,READY,Kraken,TRUE,Baseline_6_2018-09-10,64958907,
-10806458,nshaimin,6/15/2020 21:38,KRAKEN,phix filtered Milk Baseline 10804074_Baseline_28_2018-10-02,READY,Kraken,TRUE,Baseline_28_2018-10-02,48342756,
-10806459,nshaimin,6/15/2020 21:43,KRAKEN,phix filtered Milk Baseline 10804063_Baseline_21_2018-09-25,READY,Kraken,TRUE,Baseline_21_2018-09-25,51155830,
-10806460,nshaimin,6/15/2020 21:57,KRAKEN,phix filtered Milk Baseline 10804079_Baseline_18_2018-09-22,READY,Kraken,TRUE,Baseline_18_2018-09-22,50361140,
-10806461,nshaimin,6/15/2020 22:05,KRAKEN,phix filtered Milk Baseline 10804071_Baseline_16_2018-09-20,READY,Kraken,TRUE,Baseline_16_2018-09-20,61258041,
-10806462,nshaimin,6/15/2020 22:00,KRAKEN,phix filtered Milk Baseline 10804065_Baseline_15_2018-09-19,READY,Kraken,TRUE,Baseline_15_2018-09-19,46361658,
-10806463,nshaimin,6/15/2020 22:17,KRAKEN,phix filtered Milk Baseline 10804053_Baseline_5_2018-09-09,READY,Kraken,TRUE,Baseline_5_2018-09-09,78906881,
-10806464,nshaimin,6/15/2020 22:04,KRAKEN,phix filtered Milk Baseline 10804083_Baseline_27_2018-10-01,READY,Kraken,TRUE,Baseline_27_2018-10-01,57053416,
-10806465,nshaimin,6/15/2020 22:07,KRAKEN,phix filtered Milk Baseline 10804069_Baseline_24_2018-09-28,READY,Kraken,TRUE,Baseline_24_2018-09-28,48080838,
-10806466,nshaimin,6/15/2020 22:21,KRAKEN,phix filtered Milk Baseline 10804080_Baseline_4_2018-09-08,READY,Kraken,TRUE,Baseline_4_2018-09-08,67647346,
-10806467,nshaimin,6/15/2020 22:22,KRAKEN,phix filtered Milk Baseline 10804058_Baseline_1_2018-09-05,READY,Kraken,TRUE,Baseline_1_2018-09-05,70695820,
-10806468,nshaimin,6/15/2020 22:28,KRAKEN,phix filtered Milk Baseline 10804067_Baseline_12_2018-09-16,READY,Kraken,TRUE,Baseline_12_2018-09-16,67373971,
-10822026,nshaimin,6/18/2020 14:13,KRAKEN,phix filtered Milk OutsideFarm plus others 10822010_OutsideFarm_3_2018-09-11,READY,Kraken,TRUE,OutsideFarm_3_2018-09-11,59938254,
-10822027,nshaimin,6/18/2020 14:12,KRAKEN,phix filtered Milk OutsideFarm plus others 10822016_OutsideFarm_10_2018-10-01,READY,Kraken,TRUE,OutsideFarm_10_2018-10-01,56818256,
-10822028,nshaimin,6/18/2020 13:40,KRAKEN,phix filtered Milk OutsideFarm plus others 10822021_Neg_DNAextr_3,READY,Kraken,TRUE,Neg_DNAextr_3,826636,
-10822029,nshaimin,6/18/2020 14:17,KRAKEN,phix filtered Milk OutsideFarm plus others 10822018_OutsideFarm_9_2018-09-28,READY,Kraken,TRUE,OutsideFarm_9_2018-09-28,66770518,
-10822030,nshaimin,6/18/2020 13:40,KRAKEN,phix filtered Milk OutsideFarm plus others 10822007_Neg_DNAextr_5,READY,Kraken,TRUE,Neg_DNAextr_5,1114407,
-10822031,nshaimin,6/18/2020 14:15,KRAKEN,phix filtered Milk OutsideFarm plus others 10822017_OutsideFarm_11_2018-10-03,READY,Kraken,TRUE,OutsideFarm_11_2018-10-03,71955045,
-10822032,nshaimin,6/18/2020 14:12,KRAKEN,phix filtered Milk OutsideFarm plus others 10822009_OutsideFarm_8_2018-09-24,READY,Kraken,TRUE,OutsideFarm_8_2018-09-24,68822923,
-10822033,nshaimin,6/18/2020 13:40,KRAKEN,phix filtered Milk OutsideFarm plus others 10822013_Neg_DNAextr_1,READY,Kraken,TRUE,Neg_DNAextr_1,1382236,
-10822034,nshaimin,6/18/2020 14:15,KRAKEN,phix filtered Milk OutsideFarm plus others 10822023_OutsideFarm_13_2018-10-07,READY,Kraken,TRUE,OutsideFarm_13_2018-10-07,73720389,
-10822035,nshaimin,6/18/2020 14:15,KRAKEN,phix filtered Milk OutsideFarm plus others 10822020_OutsideFarm_6_2018-09-20,READY,Kraken,TRUE,OutsideFarm_6_2018-09-20,73312858,
-10822036,nshaimin,6/18/2020 14:06,KRAKEN,phix filtered Milk OutsideFarm plus others 10822024_OutsideFarm_2_2018-09-10,READY,Kraken,TRUE,OutsideFarm_2_2018-09-10,55197311,
-10822037,nshaimin,6/18/2020 14:35,KRAKEN,phix filtered Milk OutsideFarm plus others 10822019_OutsideFarm_5_2018-09-17,READY,Kraken,TRUE,OutsideFarm_5_2018-09-17,60579908,
-10822038,nshaimin,6/18/2020 14:26,KRAKEN,phix filtered Milk OutsideFarm plus others 10822014_OutsideFarm_7_2018-09-22,READY,Kraken,TRUE,OutsideFarm_7_2018-09-22,33631590,
-10822039,nshaimin,6/18/2020 14:37,KRAKEN,phix filtered Milk OutsideFarm plus others 10822008_OutsideFarm_12_2018-10-06,READY,Kraken,TRUE,OutsideFarm_12_2018-10-06,52813114,
-10822040,nshaimin,6/18/2020 14:45,KRAKEN,phix filtered Milk OutsideFarm plus others 10822004_OutsideFarm_1_2018-09-05,READY,Kraken,TRUE,OutsideFarm_1_2018-09-05,66557961,
-10822041,nshaimin,6/18/2020 14:15,KRAKEN,phix filtered Milk OutsideFarm plus others 10822011_Neg_DNAextr_2,READY,Kraken,TRUE,Neg_DNAextr_2,1353832,
-10822042,nshaimin,6/18/2020 14:16,KRAKEN,phix filtered Milk OutsideFarm plus others 10822006_SequencingBlank,READY,Kraken,TRUE,SequencingBlank,1051308,
-10822043,nshaimin,6/18/2020 14:45,KRAKEN,phix filtered Milk OutsideFarm plus others 10822015_Kefir,READY,Kraken,TRUE,Kefir,62033517,
-10822044,nshaimin,6/18/2020 14:16,KRAKEN,phix filtered Milk OutsideFarm plus others 10822012_Neg_DNAextr_6,READY,Kraken,TRUE,Neg_DNAextr_6,909257,
-10822045,nshaimin,6/18/2020 14:16,KRAKEN,phix filtered Milk OutsideFarm plus others 10822005_Neg_DNAextr_4,READY,Kraken,TRUE,Neg_DNAextr_4,1104617,
-10822046,nshaimin,6/18/2020 14:48,KRAKEN,phix filtered Milk OutsideFarm plus others 10822022_OutsideFarm_4_2018-09-12,READY,Kraken,TRUE,OutsideFarm_4_2018-09-12,67057031,
+Dataset	Owner	Created	Category	Label	State	Workflow	Grouped	Display.TAG	Kraken.UNCLASSIFIED	
+10793891	nshaimin	6/12/2020 14:17	KRAKEN	phix filtered 10793881_TxAntibiotic_6_2018-09-20	READY	Kraken	TRUE	TxAntibiotic_6_2018-09-20	57879320	
+10793892	nshaimin	6/12/2020 14:18	KRAKEN	phix filtered 10793888_TxAntibiotic_8_2018-09-26	READY	Kraken	TRUE	TxAntibiotic_8_2018-09-26	56578725	
+10793893	nshaimin	6/12/2020 14:22	KRAKEN	phix filtered 10793879_TxAntibiotic_5_2018-09-19	READY	Kraken	TRUE	TxAntibiotic_5_2018-09-19	65976721	
+10793894	nshaimin	6/12/2020 14:13	KRAKEN	phix filtered 10793878_TxAntibiotic_12_2018-10-05	READY	Kraken	TRUE	TxAntibiotic_12_2018-10-05	51421555	
+10793895	nshaimin	6/12/2020 14:12	KRAKEN	phix filtered 10793887_TxAntibiotic_9_2018-09-29	READY	Kraken	TRUE	TxAntibiotic_9_2018-09-29	52073048	
+10793896	nshaimin	6/12/2020 14:23	KRAKEN	phix filtered 10793882_TxAntibiotic_2_2018-09-07	READY	Kraken	TRUE	TxAntibiotic_2_2018-09-07	68697961	
+10793897	nshaimin	6/12/2020 13:55	KRAKEN	phix filtered 10793885_TxAntibiotic_11_2018-10-04	READY	Kraken	TRUE	TxAntibiotic_11_2018-10-04	15808729	
+10793898	nshaimin	6/12/2020 14:07	KRAKEN	phix filtered 10793884_TxAntibiotic_10_2018-10-03	READY	Kraken	TRUE	TxAntibiotic_10_2018-10-03	44249663	
+10793899	nshaimin	6/12/2020 14:23	KRAKEN	phix filtered 10793886_TxAntibiotic_1_2018-09-06	READY	Kraken	TRUE	TxAntibiotic_1_2018-09-06	58717993	
+10793900	nshaimin	6/12/2020 14:32	KRAKEN	phix filtered 10793883_TxAntibiotic_4_2018-09-14	READY	Kraken	TRUE	TxAntibiotic_4_2018-09-14	51513083	
+10796101	nshaimin	6/12/2020 14:42	KRAKEN	phix filtered 10793880_TxAntibiotic_3_2018-09-13	READY	Kraken	TRUE	TxAntibiotic_3_2018-09-13	64111296	
+10796102	nshaimin	6/12/2020 14:32	KRAKEN	phix filtered 10793889_TxAntibiotic_7_2018-09-21	READY	Kraken	TRUE	TxAntibiotic_7_2018-09-21	42763541	
+10804086	nshaimin	6/15/2020 20:47	KRAKEN	phix filtered Milk Baseline 10804055_Baseline_7_2018-09-11	READY	Kraken	TRUE	Baseline_7_2018-09-11	60456120	
+10804087	nshaimin	6/15/2020 20:50	KRAKEN	phix filtered Milk Baseline 10804052_Baseline_3_2018-09-07	READY	Kraken	TRUE	Baseline_3_2018-09-07	68930806	
+10804088	nshaimin	6/15/2020 20:46	KRAKEN	phix filtered Milk Baseline 10804061_Baseline_11_2018-09-15	READY	Kraken	TRUE	Baseline_11_2018-09-15	62801926	
+10804089	nshaimin	6/15/2020 20:40	KRAKEN	phix filtered Milk Baseline 10804075_Baseline_2_2018-09-06	READY	Kraken	TRUE	Baseline_2_2018-09-06	53837643	
+10804090	nshaimin	6/15/2020 20:45	KRAKEN	phix filtered Milk Baseline 10804084_Baseline_23_2018-09-27	READY	Kraken	TRUE	Baseline_23_2018-09-27	64495591	
+10804091	nshaimin	6/15/2020 20:47	KRAKEN	phix filtered Milk Baseline 10804059_Baseline_20_2018-09-24	READY	Kraken	TRUE	Baseline_20_2018-09-24	67052503	
+10804092	nshaimin	6/15/2020 20:32	KRAKEN	phix filtered Milk Baseline 10804072_Baseline_31_2018-10-05	READY	Kraken	TRUE	Baseline_31_2018-10-05	37396911	
+10804093	nshaimin	6/15/2020 20:35	KRAKEN	phix filtered Milk Baseline 10804054_Baseline_17_2018-09-21	READY	Kraken	TRUE	Baseline_17_2018-09-21	47513967	
+10804094	nshaimin	6/15/2020 21:00	KRAKEN	phix filtered Milk Baseline 10804081_Baseline_30_2018-10-04	READY	Kraken	TRUE	Baseline_30_2018-10-04	60444064	
+10804095	nshaimin	6/15/2020 21:01	KRAKEN	phix filtered Milk Baseline 10804073_Baseline_33_2018-10-07	READY	Kraken	TRUE	Baseline_33_2018-10-07	56206807	
+10804096	nshaimin	6/15/2020 21:15	KRAKEN	phix filtered Milk Baseline 10804062_Baseline_29_2018-10-03	READY	Kraken	TRUE	Baseline_29_2018-10-03	73471806	
+10804097	nshaimin	6/15/2020 21:12	KRAKEN	phix filtered Milk Baseline 10804077_Baseline_8_2018-09-12	READY	Kraken	TRUE	Baseline_8_2018-09-12	57457988	
+10804098	nshaimin	6/15/2020 21:16	KRAKEN	phix filtered Milk Baseline 10804064_Baseline_26_2018-09-30	READY	Kraken	TRUE	Baseline_26_2018-09-30	52906905	
+10804099	nshaimin	6/15/2020 21:19	KRAKEN	phix filtered Milk Baseline 10804076_Baseline_13_2018-09-17	READY	Kraken	TRUE	Baseline_13_2018-09-17	62513337	
+10804100	nshaimin	6/15/2020 21:16	KRAKEN	phix filtered Milk Baseline 10804057_Baseline_19_2018-09-23	READY	Kraken	TRUE	Baseline_19_2018-09-23	56573329	
+10806451	nshaimin	6/15/2020 21:12	KRAKEN	phix filtered Milk Baseline 10804082_Baseline_14_2018-09-18	READY	Kraken	TRUE	Baseline_14_2018-09-18	53048232	
+10806452	nshaimin	6/15/2020 21:36	KRAKEN	phix filtered Milk Baseline 10804078_Baseline_9_2018-09-13	READY	Kraken	TRUE	Baseline_9_2018-09-13	77647865	
+10806453	nshaimin	6/15/2020 21:33	KRAKEN	phix filtered Milk Baseline 10804070_Baseline_32_2018-10-06	READY	Kraken	TRUE	Baseline_32_2018-10-06	65268857	
+10806454	nshaimin	6/15/2020 21:37	KRAKEN	phix filtered Milk Baseline 10804066_Baseline_22_2018-09-26	READY	Kraken	TRUE	Baseline_22_2018-09-26	53868747	
+10806455	nshaimin	6/15/2020 21:39	KRAKEN	phix filtered Milk Baseline 10804068_Baseline_10_2018-09-14	READY	Kraken	TRUE	Baseline_10_2018-09-14	56819265	
+10806456	nshaimin	6/15/2020 21:49	KRAKEN	phix filtered Milk Baseline 10804056_Baseline_25_2018-09-29	READY	Kraken	TRUE	Baseline_25_2018-09-29	71828466	
+10806457	nshaimin	6/15/2020 21:50	KRAKEN	phix filtered Milk Baseline 10804060_Baseline_6_2018-09-10	READY	Kraken	TRUE	Baseline_6_2018-09-10	64958907	
+10806458	nshaimin	6/15/2020 21:38	KRAKEN	phix filtered Milk Baseline 10804074_Baseline_28_2018-10-02	READY	Kraken	TRUE	Baseline_28_2018-10-02	48342756	
+10806459	nshaimin	6/15/2020 21:43	KRAKEN	phix filtered Milk Baseline 10804063_Baseline_21_2018-09-25	READY	Kraken	TRUE	Baseline_21_2018-09-25	51155830	
+10806460	nshaimin	6/15/2020 21:57	KRAKEN	phix filtered Milk Baseline 10804079_Baseline_18_2018-09-22	READY	Kraken	TRUE	Baseline_18_2018-09-22	50361140	
+10806461	nshaimin	6/15/2020 22:05	KRAKEN	phix filtered Milk Baseline 10804071_Baseline_16_2018-09-20	READY	Kraken	TRUE	Baseline_16_2018-09-20	61258041	
+10806462	nshaimin	6/15/2020 22:00	KRAKEN	phix filtered Milk Baseline 10804065_Baseline_15_2018-09-19	READY	Kraken	TRUE	Baseline_15_2018-09-19	46361658	
+10806463	nshaimin	6/15/2020 22:17	KRAKEN	phix filtered Milk Baseline 10804053_Baseline_5_2018-09-09	READY	Kraken	TRUE	Baseline_5_2018-09-09	78906881	
+10806464	nshaimin	6/15/2020 22:04	KRAKEN	phix filtered Milk Baseline 10804083_Baseline_27_2018-10-01	READY	Kraken	TRUE	Baseline_27_2018-10-01	57053416	
+10806465	nshaimin	6/15/2020 22:07	KRAKEN	phix filtered Milk Baseline 10804069_Baseline_24_2018-09-28	READY	Kraken	TRUE	Baseline_24_2018-09-28	48080838	
+10806466	nshaimin	6/15/2020 22:21	KRAKEN	phix filtered Milk Baseline 10804080_Baseline_4_2018-09-08	READY	Kraken	TRUE	Baseline_4_2018-09-08	67647346	
+10806467	nshaimin	6/15/2020 22:22	KRAKEN	phix filtered Milk Baseline 10804058_Baseline_1_2018-09-05	READY	Kraken	TRUE	Baseline_1_2018-09-05	70695820	
+10806468	nshaimin	6/15/2020 22:28	KRAKEN	phix filtered Milk Baseline 10804067_Baseline_12_2018-09-16	READY	Kraken	TRUE	Baseline_12_2018-09-16	67373971	
+10822026	nshaimin	6/18/2020 14:13	KRAKEN	phix filtered Milk OutsideFarm plus others 10822010_OutsideFarm_3_2018-09-11	READY	Kraken	TRUE	OutsideFarm_3_2018-09-11	59938254	
+10822027	nshaimin	6/18/2020 14:12	KRAKEN	phix filtered Milk OutsideFarm plus others 10822016_OutsideFarm_10_2018-10-01	READY	Kraken	TRUE	OutsideFarm_10_2018-10-01	56818256	
+10822028	nshaimin	6/18/2020 13:40	KRAKEN	phix filtered Milk OutsideFarm plus others 10822021_Neg_DNAextr_3	READY	Kraken	TRUE	Neg_DNAextr_3	826636	
+10822029	nshaimin	6/18/2020 14:17	KRAKEN	phix filtered Milk OutsideFarm plus others 10822018_OutsideFarm_9_2018-09-28	READY	Kraken	TRUE	OutsideFarm_9_2018-09-28	66770518	
+10822030	nshaimin	6/18/2020 13:40	KRAKEN	phix filtered Milk OutsideFarm plus others 10822007_Neg_DNAextr_5	READY	Kraken	TRUE	Neg_DNAextr_5	1114407	
+10822031	nshaimin	6/18/2020 14:15	KRAKEN	phix filtered Milk OutsideFarm plus others 10822017_OutsideFarm_11_2018-10-03	READY	Kraken	TRUE	OutsideFarm_11_2018-10-03	71955045	
+10822032	nshaimin	6/18/2020 14:12	KRAKEN	phix filtered Milk OutsideFarm plus others 10822009_OutsideFarm_8_2018-09-24	READY	Kraken	TRUE	OutsideFarm_8_2018-09-24	68822923	
+10822033	nshaimin	6/18/2020 13:40	KRAKEN	phix filtered Milk OutsideFarm plus others 10822013_Neg_DNAextr_1	READY	Kraken	TRUE	Neg_DNAextr_1	1382236	
+10822034	nshaimin	6/18/2020 14:15	KRAKEN	phix filtered Milk OutsideFarm plus others 10822023_OutsideFarm_13_2018-10-07	READY	Kraken	TRUE	OutsideFarm_13_2018-10-07	73720389	
+10822035	nshaimin	6/18/2020 14:15	KRAKEN	phix filtered Milk OutsideFarm plus others 10822020_OutsideFarm_6_2018-09-20	READY	Kraken	TRUE	OutsideFarm_6_2018-09-20	73312858	
+10822036	nshaimin	6/18/2020 14:06	KRAKEN	phix filtered Milk OutsideFarm plus others 10822024_OutsideFarm_2_2018-09-10	READY	Kraken	TRUE	OutsideFarm_2_2018-09-10	55197311	
+10822037	nshaimin	6/18/2020 14:35	KRAKEN	phix filtered Milk OutsideFarm plus others 10822019_OutsideFarm_5_2018-09-17	READY	Kraken	TRUE	OutsideFarm_5_2018-09-17	60579908	
+10822038	nshaimin	6/18/2020 14:26	KRAKEN	phix filtered Milk OutsideFarm plus others 10822014_OutsideFarm_7_2018-09-22	READY	Kraken	TRUE	OutsideFarm_7_2018-09-22	33631590	
+10822039	nshaimin	6/18/2020 14:37	KRAKEN	phix filtered Milk OutsideFarm plus others 10822008_OutsideFarm_12_2018-10-06	READY	Kraken	TRUE	OutsideFarm_12_2018-10-06	52813114	
+10822040	nshaimin	6/18/2020 14:45	KRAKEN	phix filtered Milk OutsideFarm plus others 10822004_OutsideFarm_1_2018-09-05	READY	Kraken	TRUE	OutsideFarm_1_2018-09-05	66557961	
+10822041	nshaimin	6/18/2020 14:15	KRAKEN	phix filtered Milk OutsideFarm plus others 10822011_Neg_DNAextr_2	READY	Kraken	TRUE	Neg_DNAextr_2	1353832	
+10822042	nshaimin	6/18/2020 14:16	KRAKEN	phix filtered Milk OutsideFarm plus others 10822006_SequencingBlank	READY	Kraken	TRUE	SequencingBlank	1051308	
+10822043	nshaimin	6/18/2020 14:45	KRAKEN	phix filtered Milk OutsideFarm plus others 10822015_Kefir	READY	Kraken	TRUE	Kefir	62033517	
+10822044	nshaimin	6/18/2020 14:16	KRAKEN	phix filtered Milk OutsideFarm plus others 10822012_Neg_DNAextr_6	READY	Kraken	TRUE	Neg_DNAextr_6	909257	
+10822045	nshaimin	6/18/2020 14:16	KRAKEN	phix filtered Milk OutsideFarm plus others 10822005_Neg_DNAextr_4	READY	Kraken	TRUE	Neg_DNAextr_4	1104617	
+10822046	nshaimin	6/18/2020 14:48	KRAKEN	phix filtered Milk OutsideFarm plus others 10822022_OutsideFarm_4_2018-09-12	READY	Kraken	TRUE	OutsideFarm_4_2018-09-12	67057031	
