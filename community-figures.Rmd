@@ -72,8 +72,7 @@ microbes_reads_decontaminated = microbes_reads[-which(microbes_reads$Genus_Name 
 ```
 
 ```{r computeRPM}
-
-summaryFile = "~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_ReadCounts_forRPM.txt"
+summaryFile = "./data/read-counts-milk-samples-controls-incl-for-RPM.txt"
 macros_raw = read.table(summaryFile, sep = "\t", header = TRUE, stringsAsFactors = FALSE)
 
 # reorder for easier merging below
@@ -87,7 +86,7 @@ scale_const = 1000000
 microbes_psct[, -1] = microbes_psct[, -1] + 1        # add one, removing all zeros
 
 microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n) {
-	microbes_psct[,n] / macros$Kraken.UNCLASSIFIED[n-1] * scale_const}
+	microbes_psct[,n] / macros$AFTER_QC_READS[n-1] * scale_const}
 	)
 
 # Export all microbes in RPM
@@ -111,9 +110,18 @@ rpm_threshold = 0.1
 
 # microbes present above rpm threshold in  **all** samples
 consensus_index = sapply(1:nrow(microbes), function(n) all(microbes[n,2:ncol(microbes)] > rpm_threshold))
+table(consensus_index)
 consensus_microbes = microbes[consensus_index==TRUE, ]
-
 consensus_microbes_melted = melt(consensus_microbes)
+
+# microbes present in **all** baseline samples
+baseline_only = microbes %>% select(contains(c("Genus","Baseline")))
+baseline_consensus_index = sapply(1:nrow(baseline_only), function(n) all(baseline_only[n,2:ncol(baseline_only)] > rpm_threshold))
+table(baseline_consensus_index)
+baseline_consensus_microbes = baseline_only[baseline_consensus_index==TRUE, ]
+baseline_consensus_means = data.frame("Genus_Name" = baseline_consensus_microbes$Genus_Name,
+									  "mean_RPM" = rowMeans(baseline_consensus_microbes[,-1])
+									  )
 
 # microbes present above rpm threshold in  **any** samples
 supported_index = sapply(1:nrow(microbes), function(n) any(microbes[n,2:ncol(microbes)] > rpm_threshold))
@@ -183,6 +191,10 @@ ggplot(alpha_div, aes(x=type, y=nMicrobes, fill = type)) + geom_boxplot()
 
 outlier_prefixes = c("Baseline_04", "Baseline_08", "Baseline_13", "Baseline_16", "OutsideFarm_09", "OutsideFarm_13")
 
+alpha_div_no_outliers = alpha_div[-which(grepl(paste(outlier_prefixes, collapse = "|"), alpha_div$sample)),]
+
+alpha_div_no_outliers %>% group_by(type) %>% summarise(mean(nMicrobes))
+
 shannon_div = data.frame("sample" = colnames(supported_microbes)[-1],
 						 "nMicrobes" = sapply(2:ncol(supported_microbes), 
 						 					 function(x) 
@@ -195,6 +207,8 @@ shannon_div$type = sapply(1:nrow(shannon_div), function(n) str_split(shannon_div
 shannon_div$type[which(shannon_div$type == "OutsideFarm")] = "Outside Farm"
 shannon_div$type[which(shannon_div$type == "TxAntibiotic")] = "Antibiotic"
 
+
+
 # write.table(shannon_div, "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_partial.txt", sep = "\t")
 
 # filled in with NULL and NA where the category wasn't sampled so div can be plotted by date
@@ -203,7 +217,7 @@ shannon_div_filled_in = read.csv("~/Box/Sequencing the Food Supply Chain Consort
 
 
 # manuscript supplemental figure - separated by dates
-# TODO include outliers
+# TODO include outliers for date ordered supplemental
 # TODO update type labels
 ggplot(shannon_div_filled_in, aes(x=date, y=nMicrobes, fill = type)) +
 	geom_bar(stat="identity", position = "dodge") +
@@ -229,8 +243,20 @@ ggplot(shannon_div, aes(x=sample, y=nMicrobes, fill = type)) +
 								 )
 					  )
 
-# actual manuscript figure - FINAL
+
 shannon_div_no_outliers = shannon_div[-which(grepl(paste(outlier_prefixes, collapse = "|"), shannon_div$sample)),]
+shannon_div_no_outliers$type[which(shannon_div_no_outliers$type == "Antibiotic")] = "TxAntibiotic"
+
+shannon_div_no_outliers %>% group_by(type) %>% summarise(mean(nMicrobes))
+
+# wilcoxon rank sum (since independently sampled)
+wilcox.test(x = shannon_div_no_outliers$nMicrobes[which(shannon_div_no_outliers$type == "Baseline")],
+			y = shannon_div_no_outliers$nMicrobes[which(shannon_div_no_outliers$type == "TxAntibiotic")])
+wilcox.test(x = shannon_div_no_outliers$nMicrobes[which(shannon_div_no_outliers$type == "Baseline")],
+			y = shannon_div_no_outliers$nMicrobes[which(shannon_div_no_outliers$type == "Outside Farm")])
+
+
+# actual manuscript figure - FINAL
 ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 	geom_violin(trim = FALSE) + 
 	geom_boxplot(width = 0.2, fill  = ('transparent')) +
@@ -238,8 +264,9 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 	xlab("Sample Category") +
 	scale_fill_manual(values = c("Baseline" = rgb(0, 0.447, 0.741), 
 								 "Outside Farm" = rgb(0.301, 0.745, 0.933), 
-								 "Antibiotic" = rgb(0.494, 0.184, 0.556)
-								 )
+								 "TxAntibiotic" = rgb(0.494, 0.184, 0.556)
+								 ),
+					  labels = c("Baseline", "Outside Farm", "Antibiotic")
 	)
 
 
@@ -281,6 +308,12 @@ supported_microbes_low_abundance_zeroed = supported_microbes_no_outliers
 for (i in 2:ncol(supported_microbes_low_abundance_zeroed)) {
 	supported_microbes_low_abundance_zeroed[which(supported_microbes_no_outliers[,i] < other_min_value[i-1]),i] = 0
 }
+
+supported_microbes_low_abundance_zeroed_col_sums = colSums(supported_microbes_low_abundance_zeroed[,-1])
+range(supported_microbes_low_abundance_zeroed_col_sums)
+
+proportion_supported_not_other = supported_microbes_low_abundance_zeroed_col_sums / supported_microbes_col_sums
+range(proportion_supported_not_other) * 100
 
 # how much per sample is in the other category
 other_values = data.frame(t(supported_microbes_col_sums - colSums(supported_microbes_low_abundance_zeroed[,-1])))
@@ -411,7 +444,7 @@ clusDendro = dendrapply(hc, colLab)
 par(mar = c(11, 2, 2, 2))
 plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance, outliers removed)", ylab="Aitchison distance")
 legend("topright", 
-     legend = c("Baseline" , "Outside Farm", "Tx Antibiotic"), 
+     legend = c("Baseline" , "Outside Farm", "Antibiotic"), 
      col = c("#0072BD", "#4DBEEE", "#7E2F8E"), 
      pch = 20, bty = "n",  pt.cex = 1.5, cex = 1, 
      text.col = c("#0072BD", "#4DBEEE", "#7E2F8E"), horiz = FALSE, inset = c(0.05, 0.03))
