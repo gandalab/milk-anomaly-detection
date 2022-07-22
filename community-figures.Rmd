@@ -20,6 +20,7 @@ library(stringr)
 library(vegan)
 
 options(scipen = 10)
+
 ```
 
 
@@ -28,7 +29,7 @@ options(scipen = 10)
 ```{r loadData}
 
 # load microbe tables
-microbePath = "~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/Milk66samples_NewFiltering_microbe_genus_DS10828562.txt"
+microbePath = "./data/Milk66samples_NewFiltering_microbe_genus_DS10828562.txt"
 microbes_raw = read.csv(microbePath, header = TRUE, stringsAsFactors = FALSE, sep = "\t")
 
 microbes_reads = microbes_raw
@@ -212,7 +213,7 @@ shannon_div$type[which(shannon_div$type == "TxAntibiotic")] = "Antibiotic"
 # write.table(shannon_div, "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_partial.txt", sep = "\t")
 
 # filled in with NULL and NA where the category wasn't sampled so div can be plotted by date
-shannon_div_filled_in = read.csv("~/Box/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/shannon_div_by_date_filled_in.txt", sep = "\t")
+shannon_div_filled_in = read.csv("./data/shannon_div_by_date_filled_in.txt", sep = "\t")
 
 
 
