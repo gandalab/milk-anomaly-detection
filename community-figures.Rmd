@@ -373,7 +373,7 @@ baseline_consensus_microbes = baseline_only_no_outliers[baseline_consensus_index
 # ALL SAMPLES
 rownames(supported_microbes) = supported_microbes$Genus_Name
 ad = aDist(t(supported_microbes[,-1]))
-# write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-all-samples.txt", sep="\t")
+# write.table(as.matrix(ad), "./data/aitchison-distance-matrix-all-samples.txt", sep="\t")
 hc_complete = hclust(ad, method = "complete")
 hc_average  = hclust(ad, method = "average")
 # clustering method could be complete (default) or any other 
@@ -382,7 +382,7 @@ hc_average  = hclust(ad, method = "average")
 # par(mfrow=c(2,1))
 plot(hc_complete, main="Aitchison distance- Complete clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
 plot(hc_average,  main="Aitchison distance- Average clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
-# hang = -1 recommended by bala
+
 
 # as recommended by Gloor froniers in microbiology supplement 2016
 # https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
@@ -390,6 +390,7 @@ plot(hc_average,  main="Aitchison distance- Average clustering", ylab="Distance"
 # make the dendrogram
 hc <- as.dendrogram(hclust(ad, method="ward.D2"))
 hcd <- hclust(ad, method="ward.D2")
+
 # function to get color labels
 colLab <- function(n) {
     if (is.leaf(n)) {
@@ -421,7 +422,7 @@ legend("topright",
 rownames(supported_microbes_no_outliers) = supported_microbes_no_outliers$Genus_Name
 
 ad = aDist(t(supported_microbes_no_outliers[,-1]))
-# write.table(as.matrix(ad), "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Results/aitchison-distance-matrix-outliers-removed.txt", sep="\t")
+# write.table(as.matrix(ad), "./data/aitchison-distance-matrix-outliers-removed.txt", sep="\t")
 hc_complete = hclust(ad, method = "complete")
 hc_average  = hclust(ad, method = "average")
 # clustering method could be complete (default) or any other 
@@ -430,7 +431,7 @@ hc_average  = hclust(ad, method = "average")
 # par(mfrow=c(2,1))
 plot(hc_complete, main="Aitchison distance- Complete clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
 plot(hc_average,  main="Aitchison distance- Average clustering", ylab="Distance", xlab="Sample Identifier", hang = -1)
-# hang = -1 recommended by bala
+
 
 # as recommended by Gloor froniers in microbiology supplement 2016
 # https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
@@ -452,12 +453,13 @@ colLab <- function(n) {
     n
 }
 
+# consistent coloring through manuscript
 # "Baseline" = rgb(0, 0.447, 0.741), #0072BD
 # "Outside Farm" = rgb(0.301, 0.745, 0.933), #4DBEEE 
 # "Antibiotic" = rgb(0.494, 0.184, 0.556), #7E2F8E
 
 
-# using dendrapply, updated w no outliers
+# using dendrapply, updated w no outliers, manuscript version
 clusDendro = dendrapply(hc, colLab)
 par(mar = c(11, 2, 2, 2))
 plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance, outliers removed)", ylab="Aitchison distance")
@@ -491,7 +493,6 @@ plot(hc_average,
 	 main="Aitchison distance- Average clustering, baseline only", 
 	 ylab="Distance", xlab="Sample Identifier", hang = -1
 	 )
-# hang = -1 recommended by bala
 
 # as recommended by Gloor froniers in microbiology supplement 2016
 # https://github.com/ggloor/Frontiers_2017/blob/master/Frontiers_supplement.Rmd
@@ -499,7 +500,7 @@ plot(hc_average,
 # make the dendrogram
 hc <- as.dendrogram(hclust(ad, method="ward.D2"))
 hcd <- hclust(ad, method="ward.D2")
-# function to get color labels
+
 
 plot(hcd,  
 	 main="Aitchison distance- Ward.D2 clustering, baseline only", 
