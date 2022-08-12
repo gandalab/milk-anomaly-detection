@@ -259,84 +259,11 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 
 
 ## Microbial Community
-```{r stackedMicrobesOriginal}
-# colourCount = length(unique(consensus_microbes_melted$Genus_Name))
-# getPalette = colorRampPalette(brewer.pal(9, "Set1"))
-#  
-# # consensus plots actual RPM - old manuscript version
-# ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
-# 	geom_bar(stat = "identity") + 
-# 	ylab("Relative abundance") + xlab("Sample") +
-# 	ggtitle(label = "Consensus genera microbial composition") +
-# 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-# 	scale_fill_manual(values = getPalette(colourCount))
-# 
-# # consensus plots scaled - old manuscript version
-# ggplot(consensus_microbes_melted, aes(x = variable, y = value, fill = Genus_Name)) +
-# 	geom_bar(stat = "identity", position = "fill") + 
-# 	ylab("Relative abundance") + xlab("Sample") +
-# 	ggtitle(label = "Consensus genera microbial composition") +
-# 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
-# 	scale_fill_manual(values = getPalette(colourCount))
-
-supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
-
-# sum each column
-supported_microbes_col_sums = colSums(supported_microbes_no_outliers[,-1])
-# get the per column threshold
-other_threshold = 0.05
-other_min_value = supported_microbes_col_sums * other_threshold
-
-# if the value is less than threshold set it to zero
-supported_microbes_low_abundance_zeroed = supported_microbes_no_outliers
-for (i in 2:ncol(supported_microbes_low_abundance_zeroed)) {
-	supported_microbes_low_abundance_zeroed[which(supported_microbes_no_outliers[,i] < other_min_value[i-1]),i] = 0
-}
-
-supported_microbes_low_abundance_zeroed_col_sums = colSums(supported_microbes_low_abundance_zeroed[,-1])
-range(supported_microbes_low_abundance_zeroed_col_sums)
-
-proportion_supported_not_other = supported_microbes_low_abundance_zeroed_col_sums / supported_microbes_col_sums
-range(proportion_supported_not_other) * 100
-
-# how much per sample is in the other category
-other_values = data.frame(t(supported_microbes_col_sums - colSums(supported_microbes_low_abundance_zeroed[,-1])))
-other_df = data.frame("Genus_Name" = c("Other"),
-					  other_values)
-rownames(other_df) = "Other"
-supported_microbes_w_other = rbind(supported_microbes_low_abundance_zeroed, other_df)
-
-max_val_rpm = sapply(1:nrow(supported_microbes_w_other), function(n)
-	   max(supported_microbes_w_other[n,-1])
-	   )
-supported_w_other_clean = supported_microbes_w_other[which(max_val_rpm > 0), ]
-
-supported_microbes_w_other_m = melt(supported_w_other_clean) 
-
-supported_microbes_w_other_m$Genus_Name = relevel(factor(supported_microbes_w_other_m$Genus_Name), ref = 'Other')
-
-
-ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Supported genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# exported as 1377 x 827 px
-
-ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity", position = "fill") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Supported genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# exported as 1377 x 827 px
-```
 
 
 ```{r stackedMicrobesUpdatedJuly}
 
-# compute the >5% in at least one sample so that values less than 5% are still visible
-# and replot 
-
+# compute the >5% in at least one sample so that values less than 5% are still visible in other samples
 supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
 
 # sum each column
@@ -374,7 +301,7 @@ supported_microbes_w_other_v2_1 = rbind(c(0, other_sum_per_column), supported_mi
 supported_microbes_w_other_v2_1$Genus_Name[1] = "Other"
 rownames(supported_microbes_w_other_v2_1)[1] = "Other"
 
-# calculate the range the "predominant" microbes account for
+# calculate the range of the "predominant" microbes
 range(colSums(supported_microbes_w_other_v2_1[-which(supported_microbes_w_other_v2_1$Genus_Name == "Other"),-1]) / colSums(supported_microbes_w_other_v2_1[,-1]) * 100)
 
 # compare microbe table with other summed versus complete microbe table
@@ -390,30 +317,12 @@ genus_order_mean = order(rowMeans(supported_microbes_w_other_v2_1[,-1]), decreas
 manuscript_preferred_order = supported_microbes_w_other_v2_1$Genus_Name[genus_order_mean]
 manuscript_preferred_order = manuscript_preferred_order[-which(manuscript_preferred_order == "Other")]
 manuscript_preferred_order = c(manuscript_preferred_order, "Other")
-# supported_microbes_w_other_m$Genus_Name = relevel(factor(supported_microbes_w_other_m$Genus_Name), ref = 'Other')
+
 
 supported_microbes_w_other_m$Genus_Name = factor(supported_microbes_w_other_v2_1$Genus_Name, 
 												 levels = manuscript_preferred_order
 												 )
 
-
-
-ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Supported genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# exported as 1377 x 827 px
-
-ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
-	geom_bar(stat = "identity", position = "fill") + 
-	ylab("Relative abundance") + xlab("Sample") +
-	ggtitle(label = "Supported genera microbial composition") +
-	theme(axis.text.x = element_text(angle = 90, hjust = 1))
-# exported as 1377 x 827 px
-
-# color fussiness
-# https://stackoverflow.com/questions/15282580/how-to-generate-a-number-of-most-distinctive-colors-in-r
 
 
 colourCount = length(unique(supported_microbes_w_other_m$Genus_Name))
