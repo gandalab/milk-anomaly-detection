@@ -352,17 +352,17 @@ ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_N
 ```{r consensusGeneraNoOutliers}
 
 # microbes present in **all** samples
-consensus_index_correct = sapply(1:nrow(supported_microbes_no_outliers), function(n) all(supported_microbes_no_outliers[n,2:ncol(supported_microbes_no_outliers)] > rpm_threshold))
-table(consensus_index_correct)
-consensus_microbes_correct = supported_microbes_no_outliers[consensus_index_correct==TRUE, ]
+consensus_index = sapply(1:nrow(supported_microbes_no_outliers), function(n) all(supported_microbes_no_outliers[n,2:ncol(supported_microbes_no_outliers)] > rpm_threshold))
+table(consensus_index)
+consensus_microbes = supported_microbes_no_outliers[consensus_index==TRUE, ]
 
-# write.table(consensus_microbes_correct, "~/Downloads/consensus_microbes_no_outliers.csv", sep = ",", row.names = FALSE, quote = FALSE)
+# write.table(consensus_microbes, "./data/consensus_microbes_no_outliers.csv", sep = ",", row.names = FALSE, quote = FALSE)
 
 # microbes present in **all baseline** samples
 baseline_only_no_outliers = supported_microbes_no_outliers %>% select(contains(c("Genus","Baseline")))
-baseline_consensus_index_correct = sapply(1:nrow(baseline_only_no_outliers), function(n) all(baseline_only_no_outliers[n,2:ncol(baseline_only_no_outliers)] > rpm_threshold))
-table(baseline_consensus_index_correct)
-baseline_consensus_microbes_correct = baseline_only_no_outliers[baseline_consensus_index_correct==TRUE, ]
+baseline_consensus_index = sapply(1:nrow(baseline_only_no_outliers), function(n) all(baseline_only_no_outliers[n,2:ncol(baseline_only_no_outliers)] > rpm_threshold))
+table(baseline_consensus_index)
+baseline_consensus_microbes = baseline_only_no_outliers[baseline_consensus_index ==TRUE, ]
 
 ```
 
