@@ -25,7 +25,7 @@ setwd("~/Work/Code/Research-Other/milk-anomaly-detection/")
 ```
 
 
-## Visualizations for Anomaly Detection Prelim Samples
+# Visualizations for Microbiome Community Description and Anomaly Detection in Dairy Samples
 
 ```{r loadData}
 
@@ -83,6 +83,7 @@ macros = arrange(macros_raw, Display.TAG)
 
 microbes_psct = microbes_reads_decontaminated
 
+
 # additionally pseudo-count raw reads assigned to compute adjusted RPM
 scale_const = 1000000
 microbes_psct[, -1] = microbes_psct[, -1] + 1        # add one, removing all zeros
@@ -91,19 +92,16 @@ microbes_psct[,2:ncol(microbes_psct)] = sapply(2:ncol(microbes_psct), function(n
 	microbes_psct[,n] / macros$AFTER_QC_READS[n-1] * scale_const}
 	)
 
-# Export all microbes in RPM
-# old export
-# write.table(microbes_psct, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-all-samples-new-filtering-RPM-all-microbes_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-# decontaminated, then RPM export
+# export decontaminated, RPM values for all microbes
 # write.table(microbes_psct, file = "./data/milk_all_samples_decontam_RPM_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 ```
 
 ```{r generateFeatureTable}
 
+# drop unneeded samples and clean columnn names
 control_samples = c("NEG_DNAextr*", "Kefir*", "SequencingBlank*")
 microbes = dplyr::select(microbes_psct, -matches(control_samples)) 
-# this matches the Kraken datafile Niina added to github (note no control, keffir, etc)
 colnames(microbes) = str_remove(colnames(microbes), "_ds[0-9]+")
 # add preceding zeros to sample names
 colnames(microbes) = str_replace(string = colnames(microbes), pattern = "_([0-9])_", replacement = "_0\\1_")
@@ -123,9 +121,8 @@ supported_microbes_melted = melt(supported_microbes)
 
 levels(supported_microbes_melted$variable)
 
-# old export
-# write.table(supported_microbes, file = "~/Box Sync/Sequencing the Food Supply Chain Consortium - Cornell + Penn Project/Shared-Data/milk-real-samples-new-filtering-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
-# decontam, new export
+
+# export decontam, RPM values for supported microbes (i.e. those genera above threshold)
 # write.table(supported_microbes, file = "./data/milk-real-samples-decontam-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 ```
