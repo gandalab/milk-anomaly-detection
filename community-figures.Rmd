@@ -20,6 +20,7 @@ library(stringr)
 library(vegan)
 
 options(scipen = 10)
+setwd("~/Work/Code/Research-Other/milk-anomaly-detection/")
 
 ```
 
@@ -109,21 +110,6 @@ colnames(microbes) = str_replace(string = colnames(microbes), pattern = "_([0-9]
 
 rpm_threshold = 0.1
 
-# microbes present above rpm threshold in  **all** samples
-consensus_index = sapply(1:nrow(microbes), function(n) all(microbes[n,2:ncol(microbes)] > rpm_threshold))
-table(consensus_index)
-consensus_microbes = microbes[consensus_index==TRUE, ]
-consensus_microbes_melted = melt(consensus_microbes)
-
-# microbes present in **all** baseline samples
-baseline_only = microbes %>% select(contains(c("Genus","Baseline")))
-baseline_consensus_index = sapply(1:nrow(baseline_only), function(n) all(baseline_only[n,2:ncol(baseline_only)] > rpm_threshold))
-table(baseline_consensus_index)
-baseline_consensus_microbes = baseline_only[baseline_consensus_index==TRUE, ]
-baseline_consensus_means = data.frame("Genus_Name" = baseline_consensus_microbes$Genus_Name,
-									  "mean_RPM" = rowMeans(baseline_consensus_microbes[,-1])
-									  )
-
 # microbes present above rpm threshold in  **any** samples
 supported_index = sapply(1:nrow(microbes), function(n) any(microbes[n,2:ncol(microbes)] > rpm_threshold))
 supported_microbes_unordered = microbes[supported_index==TRUE, ]
@@ -143,6 +129,29 @@ levels(supported_microbes_melted$variable)
 # write.table(supported_microbes, file = "./data/milk-real-samples-decontam-RPM-supported-microbes-only_from_DS10828562.txt", sep = "\t", quote = FALSE, row.names = FALSE)
 
 ```
+
+
+```{r consensusGeneraWithOutliers}
+
+# microbes present above rpm threshold in  **all** samples
+consensus_index = sapply(1:nrow(microbes), function(n) all(microbes[n,2:ncol(microbes)] > rpm_threshold))
+table(consensus_index)
+consensus_microbes = microbes[consensus_index==TRUE, ]
+#write.table(consensus_microbes, "~/Downloads/consensus_microbes.csv", sep = ",", row.names = FALSE, quote = FALSE)
+consensus_microbes_melted = melt(consensus_microbes)
+
+# microbes present in **all** baseline samples
+baseline_only = microbes %>% select(contains(c("Genus","Baseline")))
+baseline_consensus_index = sapply(1:nrow(baseline_only), function(n) all(baseline_only[n,2:ncol(baseline_only)] > rpm_threshold))
+table(baseline_consensus_index)
+baseline_consensus_microbes = baseline_only[baseline_consensus_index==TRUE, ]
+baseline_consensus_means = data.frame("Genus_Name" = baseline_consensus_microbes$Genus_Name,
+									  "mean_RPM" = rowMeans(baseline_consensus_microbes[,-1])
+									  )
+#write.table(baseline_consensus_microbes, "~/Downloads/baseline_consensus_microbes.csv", sep = ",", row.names = FALSE, quote = FALSE)
+
+```
+
 
 
 ```{r extractSampleMetadata}
@@ -275,7 +284,7 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 
 
 ## Microbial Community
-```{r stackedMicrobes}
+```{r stackedMicrobesOriginal}
 # colourCount = length(unique(consensus_microbes_melted$Genus_Name))
 # getPalette = colorRampPalette(brewer.pal(9, "Set1"))
 #  
@@ -294,7 +303,6 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 # 	ggtitle(label = "Consensus genera microbial composition") +
 # 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 # 	scale_fill_manual(values = getPalette(colourCount))
-
 
 supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
 
@@ -348,6 +356,131 @@ ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_N
 # exported as 1377 x 827 px
 ```
 
+
+```{r stackedMicrobesUpdatedJuly}
+
+# compute the >5% in at least one sample so that values less than 5% are still visible
+# and replot 
+
+supported_microbes_no_outliers = supported_microbes %>% select(!contains(outlier_prefixes))
+
+# sum each column
+supported_microbes_col_sums = colSums(supported_microbes_no_outliers[,-1])
+
+# create relative percent df
+supported_microbes_perc = data.frame(
+	sapply(2:ncol(supported_microbes_no_outliers), function(n) 
+		supported_microbes_no_outliers[,n] / supported_microbes_col_sums[n-1] * 100
+	))
+
+supported_microbes_perc = cbind(supported_microbes_no_outliers$Genus_Name, supported_microbes_perc)
+colnames(supported_microbes_perc) = colnames(supported_microbes_no_outliers)
+
+# qc on proportion
+sapply(2:ncol(supported_microbes_perc), function(n)
+	sum(supported_microbes_perc[,n]))
+
+# get the any >= 5% table
+gtr5perc_index = sapply(1:nrow(supported_microbes_perc), function(n) any(supported_microbes_perc[n,2:ncol(supported_microbes_perc)] >= 5))
+genera_gtr5perc = supported_microbes_perc$Genus_Name[gtr5perc_index==TRUE]
+
+# then get the microbe names for the other
+genera_other = supported_microbes_perc$Genus_Name[gtr5perc_index==FALSE]
+
+# sum RPM for "other" category
+other_sum_per_column = colSums(
+	supported_microbes_no_outliers[which(supported_microbes_no_outliers$Genus_Name %in% genera_other),
+								   2:ncol(supported_microbes_no_outliers)]
+)
+
+supported_microbes_w_other_v2 = supported_microbes_no_outliers[which(supported_microbes_no_outliers$Genus_Name %in% genera_gtr5perc), ]
+
+supported_microbes_w_other_v2_1 = rbind(c(0, other_sum_per_column), supported_microbes_w_other_v2)
+supported_microbes_w_other_v2_1$Genus_Name[1] = "Other"
+rownames(supported_microbes_w_other_v2_1)[1] = "Other"
+
+# calculate the range the "predominant" microbes account for
+range(colSums(supported_microbes_w_other_v2_1[-which(supported_microbes_w_other_v2_1$Genus_Name == "Other"),-1]) / colSums(supported_microbes_w_other_v2_1[,-1]) * 100)
+
+# compare microbe table with other summed versus complete microbe table
+sumComparisonFullVsOther = data.frame("othered" = colSums(supported_microbes_w_other_v2_1[,-1]),
+									  "regular" = colSums(supported_microbes_no_outliers[,-1]))
+table(sumComparisonFullVsOther$othered - sumComparisonFullVsOther$regular)
+# margins of rounding, these are equivalent dataframes
+
+
+supported_microbes_w_other_m = melt(supported_microbes_w_other_v2_1) 
+
+genus_order_mean = order(rowMeans(supported_microbes_w_other_v2_1[,-1]), decreasing = TRUE)
+manuscript_preferred_order = supported_microbes_w_other_v2_1$Genus_Name[genus_order_mean]
+manuscript_preferred_order = manuscript_preferred_order[-which(manuscript_preferred_order == "Other")]
+manuscript_preferred_order = c(manuscript_preferred_order, "Other")
+# supported_microbes_w_other_m$Genus_Name = relevel(factor(supported_microbes_w_other_m$Genus_Name), ref = 'Other')
+
+supported_microbes_w_other_m$Genus_Name = factor(supported_microbes_w_other_v2_1$Genus_Name, 
+												 levels = manuscript_preferred_order
+												 )
+
+
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# exported as 1377 x 827 px
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity", position = "fill") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1))
+# exported as 1377 x 827 px
+
+# color fussiness
+# https://stackoverflow.com/questions/15282580/how-to-generate-a-number-of-most-distinctive-colors-in-r
+
+
+colourCount = length(unique(supported_microbes_w_other_m$Genus_Name))
+getPalette = colorRampPalette(brewer.pal(12, "Paired"))
+orig_colors = getPalette(colourCount)
+orig_colors[9] = "#9A4979"
+orig_colors[11] = "#FEA594"
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = orig_colors)
+# exported as 1377 x 827 px
+
+ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
+	geom_bar(stat = "identity", position = "fill") + 
+	ylab("Relative abundance") + xlab("Sample") +
+	ggtitle(label = "Supported genera microbial composition") +
+	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+	scale_fill_manual(values = orig_colors)
+# exported as 1377 x 827 px
+```
+
+
+```{r consensusGeneraNoOutliers}
+
+# microbes present in **all** samples
+consensus_index_correct = sapply(1:nrow(supported_microbes_no_outliers), function(n) all(supported_microbes_no_outliers[n,2:ncol(supported_microbes_no_outliers)] > rpm_threshold))
+table(consensus_index_correct)
+consensus_microbes_correct = supported_microbes_no_outliers[consensus_index_correct==TRUE, ]
+
+# write.table(consensus_microbes_correct, "~/Downloads/consensus_microbes_no_outliers.csv", sep = ",", row.names = FALSE, quote = FALSE)
+
+# microbes present in **all baseline** samples
+baseline_only_no_outliers = supported_microbes_no_outliers %>% select(contains(c("Genus","Baseline")))
+baseline_consensus_index_correct = sapply(1:nrow(baseline_only_no_outliers), function(n) all(baseline_only_no_outliers[n,2:ncol(baseline_only_no_outliers)] > rpm_threshold))
+table(baseline_consensus_index_correct)
+baseline_consensus_microbes_correct = baseline_only_no_outliers[baseline_consensus_index_correct==TRUE, ]
+
+```
 
 
 ## Ecological metrics - beta diversity
