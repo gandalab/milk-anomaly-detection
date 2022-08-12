@@ -1,6 +1,7 @@
-# milk-anomaly-detection
+# Data Analysis and Visualizations for Microbiome Characterization and Anomaly Detection in Milk
 
-Data was processed by kiwi QC and additional removal of tailing G's and adapter sequences with `filterFaultyFastq` script.
-Filtered matrix-removed sequences are in MCAW DS `10835051`
+This repository accompanies the manuscript:  
 
-See [Data Description](./data/DESCRIPTION.md) for additional details Golden datasets to use in analyses:
+Niina Haiminen, Kristen L. Beck, Akshay Agarwal, Anna Paola Carrieri, Ban Kawas, Martin Wiedmann, and Erika Ganda "Detecting anomalous content in dairy with whole metagenome sequencing" (in submission, 2022)
+
+See [Data Description](./data/DESCRIPTION.md) for additional details of datasets to use in analyses.
