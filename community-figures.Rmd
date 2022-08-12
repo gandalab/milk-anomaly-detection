@@ -258,8 +258,7 @@ ggplot(shannon_div_no_outliers, aes(x=type, y=nMicrobes, fill = type)) +
 ```
 
 
-## Microbial Community
-
+## Microbial Community Description
 
 ```{r stackedMicrobesUpdatedJuly}
 
