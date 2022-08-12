@@ -128,28 +128,6 @@ levels(supported_microbes_melted$variable)
 ```
 
 
-```{r consensusGeneraWithOutliers}
-
-# microbes present above rpm threshold in  **all** samples
-consensus_index = sapply(1:nrow(microbes), function(n) all(microbes[n,2:ncol(microbes)] > rpm_threshold))
-table(consensus_index)
-consensus_microbes = microbes[consensus_index==TRUE, ]
-#write.table(consensus_microbes, "~/Downloads/consensus_microbes.csv", sep = ",", row.names = FALSE, quote = FALSE)
-consensus_microbes_melted = melt(consensus_microbes)
-
-# microbes present in **all** baseline samples
-baseline_only = microbes %>% select(contains(c("Genus","Baseline")))
-baseline_consensus_index = sapply(1:nrow(baseline_only), function(n) all(baseline_only[n,2:ncol(baseline_only)] > rpm_threshold))
-table(baseline_consensus_index)
-baseline_consensus_microbes = baseline_only[baseline_consensus_index==TRUE, ]
-baseline_consensus_means = data.frame("Genus_Name" = baseline_consensus_microbes$Genus_Name,
-									  "mean_RPM" = rowMeans(baseline_consensus_microbes[,-1])
-									  )
-#write.table(baseline_consensus_microbes, "~/Downloads/baseline_consensus_microbes.csv", sep = ",", row.names = FALSE, quote = FALSE)
-
-```
-
-
 
 ```{r extractSampleMetadata}
 # extract dates and sample category from sample names
