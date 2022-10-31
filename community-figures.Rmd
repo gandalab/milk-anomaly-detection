@@ -460,7 +460,7 @@ colLab <- function(n) {
 
 # using dendrapply, updated w no outliers, manuscript version
 clusDendro = dendrapply(hc, colLab)
-par(mar = c(11, 2, 2, 2))
+par(mar = c(11, 5, 2, 2))
 plot(clusDendro, main="Beta diversity clustering by sample (Aitchison distance, outliers removed)", ylab="Aitchison distance")
 legend("topright", 
      legend = c("Baseline" , "Outside Farm", "Antibiotic"), 
