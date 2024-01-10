@@ -9,7 +9,7 @@ output: html_document
 
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
-library(decontam)
+library(decontam) # install via bioconductor
 library(dplyr)
 library(ggplot2)
 library(gridExtra)
@@ -332,7 +332,7 @@ orig_colors[11] = "#FEA594"
 
 ggplot(supported_microbes_w_other_m, aes(x = variable, y = value, fill = Genus_Name)) +
 	geom_bar(stat = "identity") + 
-	ylab("Relative abundance") + xlab("Sample") +
+	ylab("Relative abundance (RPM)") + xlab("Sample") +
 	ggtitle(label = "Supported genera microbial composition") +
 	theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
 	scale_fill_manual(values = orig_colors)
